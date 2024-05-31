@@ -3,18 +3,32 @@
     <div class="interview-stream">
       <div class="content-container">
         <div class="top-bar">
-          <div class="timer-container">
-            <div class="timer">{{ formatTime(timer) }}</div>
+          <div :class="['timer-container', { flashing: !isRecordComplete }]">
+            <div class="timer">{{ formatTime(currentQuestionTimer) }}</div>
           </div>
           <div class="question-header">
-            <b><span class="question-number">1 / 10</span></b>
+            <b>
+              <span class="question-number"
+                >{{ currentQuestionIndex + 1 }} / {{ questions.length }}</span
+              >
+            </b>
           </div>
           <v-btn
+            v-if="currentQuestionIndex < questions.length - 1"
             :disabled="!isRecordComplete"
-            :color="!isRecordComplete ? 'light-grey' : 'primary'"
+            :class="['next-question-btn', { 'flash-color': isRecordComplete }]"
             @click="nextQuestion"
-            >Next Question</v-btn
           >
+            Next Question
+          </v-btn>
+          <v-btn
+            v-else
+            :disabled="!isRecordComplete"
+            :class="['submit-btn', { 'flash-color': isRecordComplete }]"
+            @click="submit"
+          >
+            Submit
+          </v-btn>
         </div>
         <div class="content">
           <div class="video-col">
@@ -25,9 +39,7 @@
           <div class="question-col">
             <div class="question">
               <span class="question-text">
-                Tell me a little bit about yourself and something that you're
-                passionate about – Preferably things that I would not see on
-                your resume.
+                {{ questions[currentQuestionIndex].questionText }}
               </span>
             </div>
           </div>
@@ -39,18 +51,21 @@
             class="audio-canvas"
           ></canvas>
 
-          <v-btn v-if="!isRecording" @click="startRecording" color="success"
-            >Start Recording</v-btn
+          <v-btn
+            v-if="!isRecording && !isRecordComplete"
+            @click="startRecording"
+            color="success"
           >
-          <v-btn v-if="isRecording" @click="stopRecording" color="error"
-            >End Recording</v-btn
-          >
+            Start Recording
+          </v-btn>
+          <v-btn v-if="isRecording" @click="stopRecording" color="error">
+            End Recording
+          </v-btn>
         </div>
       </div>
     </div>
   </div>
 </template>
-
 <script>
 import axios from "axios";
 
@@ -59,7 +74,7 @@ export default {
     return {
       mediaRecorder: null,
       audioChunks: [],
-      timer: 120,
+      currentQuestionTimer: 0,
       intervalId: null,
       isRecording: false,
       isRecordComplete: false,
@@ -67,10 +82,44 @@ export default {
       audioContext: null,
       analyser: null,
       dataArray: null,
+      currentQuestionIndex: 0,
+      questions: [
+        {
+          id: 1,
+          questionText: "Tell me a little bit about yourself.",
+          answerText: "",
+          time: 5,
+        },
+        {
+          id: 2,
+          questionText: "What are your strengths?",
+          answerText: "",
+          time: 90,
+        },
+        {
+          id: 3,
+          questionText: "What are your weaknesses?",
+          answerText: "",
+          time: 60,
+        },
+        {
+          id: 4,
+          questionText: "Why do you want this job?",
+          answerText: "",
+          time: 150,
+        },
+        {
+          id: 5,
+          questionText: "Where do you see yourself in five years?",
+          answerText: "",
+          time: 180,
+        },
+      ],
     };
   },
   mounted() {
     this.initCamera();
+    this.startTimer();
   },
   methods: {
     async initCamera() {
@@ -91,6 +140,7 @@ export default {
       ]);
       this.audioChunks = [];
       this.isRecording = true;
+      this.isRecordComplete = false;
       this.mediaRecorder = new MediaRecorder(combinedStream);
 
       this.mediaRecorder.ondataavailable = (event) => {
@@ -99,7 +149,6 @@ export default {
 
       this.mediaRecorder.onstop = this.handleStopRecording;
       this.mediaRecorder.start();
-      this.startTimer();
 
       // Initialize AudioContext and AnalyserNode
       this.audioContext = new AudioContext();
@@ -116,7 +165,10 @@ export default {
       });
     },
     stopRecording() {
-      this.mediaRecorder.stop();
+      if (this.mediaRecorder) {
+        this.mediaRecorder.stop();
+      }
+      this.isRecordComplete = true;
       this.isRecording = false;
       this.stopTimer();
       if (this.audioContext) {
@@ -139,16 +191,18 @@ export default {
           }
         );
         console.log(response.data.transcription);
+        this.questions[this.currentQuestionIndex].answerText =
+          response.data.transcription;
       } catch (error) {
         console.error("Error transcribing audio:", error);
       }
-
-      this.isRecordComplete = true;
     },
     startTimer() {
+      this.currentQuestionTimer =
+        this.questions[this.currentQuestionIndex].time;
       this.intervalId = setInterval(() => {
-        if (this.timer > 0) {
-          this.timer--;
+        if (this.currentQuestionTimer > 0) {
+          this.currentQuestionTimer--;
         } else {
           this.stopRecording();
         }
@@ -156,7 +210,7 @@ export default {
     },
     stopTimer() {
       clearInterval(this.intervalId);
-      this.timer = 120;
+      this.currentQuestionTimer = 0;
     },
     formatTime(seconds) {
       const minutes = Math.floor(seconds / 60);
@@ -164,13 +218,22 @@ export default {
       return `${minutes}:${secs < 10 ? "0" : ""}${secs}`;
     },
     nextQuestion() {
-      // Implement the logic to move to the next question
+      if (this.currentQuestionIndex < this.questions.length - 1) {
+        this.currentQuestionIndex++;
+        this.isRecordComplete = false;
+        this.startTimer();
+      }
+    },
+    submit() {
+      console.log("Submit answers:", this.questions);
+      // Implement the submission logic
     },
     draw() {
       const canvas = this.$refs.audioCanvas;
       const canvasCtx = canvas.getContext("2d");
 
       const drawVisual = () => {
+        if (!this.isRecording) return; // Stop drawing when not recording
         requestAnimationFrame(drawVisual);
 
         this.analyser.getByteTimeDomainData(this.dataArray);
@@ -206,9 +269,16 @@ export default {
       drawVisual();
     },
   },
+  watch: {
+    currentQuestionIndex(newIndex, oldIndex) {
+      if (newIndex !== oldIndex) {
+        this.stopTimer();
+        this.startTimer();
+      }
+    },
+  },
 };
 </script>
-
 <style scoped lang="scss">
 .main-container {
   position: fixed;
@@ -255,6 +325,10 @@ export default {
   color: white;
 }
 
+.timer-container.flashing {
+  animation: flashTimer 2s infinite;
+}
+
 .timer {
   font-size: 20px;
   font-weight: bold;
@@ -291,6 +365,7 @@ video {
   justify-content: space-between;
   align-items: center;
   text-align: center;
+  min-height: 50px;
 }
 
 .controls.single-element {
@@ -335,5 +410,36 @@ video {
   background: rgba(0, 0, 0, 0.1);
   box-shadow: 0 10px 12px rgb(240, 244, 248);
   border: 1px rgb(255, 126, 126) solid;
+}
+.next-question-btn {
+  color: white;
+}
+
+.flash-color {
+  animation: flashColor 1.5s infinite;
+}
+
+@keyframes flashColor {
+  0% {
+    background-color: rgb(81, 98, 236);
+  }
+  50% {
+    background-color: rgb(121 134 236);
+  }
+  100% {
+    background-color: rgb(81, 98, 236);
+  }
+}
+
+@keyframes flashTimer {
+  0% {
+    background-color: rgb(81, 98, 236);
+  }
+  50% {
+    background-color: rgb(121 134 236);
+  }
+  100% {
+    background-color: rgb(81, 98, 236);
+  }
 }
 </style>
