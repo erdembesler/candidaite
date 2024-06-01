@@ -80,6 +80,7 @@
     </div>
   </div>
 </template>
+
 <script>
 import axios from "axios";
 
@@ -97,46 +98,17 @@ export default {
       analyser: null,
       dataArray: null,
       currentQuestionIndex: 0,
-      questions: [
-        {
-          id: 1,
-          questionText: "Tell me a little bit about yourself.",
-          answerText: "",
-          time: 5,
-        },
-        {
-          id: 2,
-          questionText: "What are your strengths?",
-          answerText: "",
-          time: 90,
-        },
-        {
-          id: 3,
-          questionText: "What are your weaknesses?",
-          answerText: "",
-          time: 60,
-        },
-        {
-          id: 4,
-          questionText: "Why do you want this job?",
-          answerText: "",
-          time: 150,
-        },
-        {
-          id: 5,
-          questionText: "Where do you see yourself in five years?",
-          answerText: "",
-          time: 180,
-        },
-      ],
+      questions: [],
     };
   },
   props: {
     id: String,
   },
+  beforeMount() {
+    this.fetchInterview();
+  },
   mounted() {
     this.initCamera();
-    this.startTimer();
   },
   methods: {
     async initCamera() {
@@ -146,6 +118,18 @@ export default {
         audio: false,
       });
       video.srcObject = this.stream;
+    },
+    async fetchInterview() {
+      try {
+        const id = this.$route.params.id || this.id;
+        const response = await axios.get(
+          `http://localhost:3000/interviews/${id}/candidates`
+        );
+        this.questions = response.data.questions;
+        this.startTimer();
+      } catch (error) {
+        console.error("Error fetching interview:", error);
+      }
     },
     async startRecording() {
       const audioStream = await navigator.mediaDevices.getUserMedia({
@@ -188,7 +172,7 @@ export default {
       this.isRecordComplete = true;
       this.isRecording = false;
       this.stopTimer();
-      if (this.audioContext) {
+      if (this.audioContext && this.audioContext.state !== "closed") {
         this.audioContext.close();
       }
     },
@@ -216,7 +200,7 @@ export default {
     },
     startTimer() {
       this.currentQuestionTimer =
-        this.questions[this.currentQuestionIndex].time;
+        this.questions[this.currentQuestionIndex].time || 120; // default 2 minutes
       this.intervalId = setInterval(() => {
         if (this.currentQuestionTimer > 0) {
           this.currentQuestionTimer--;
@@ -295,6 +279,7 @@ export default {
   },
 };
 </script>
+
 <style scoped lang="scss">
 .main-container {
   position: fixed;
