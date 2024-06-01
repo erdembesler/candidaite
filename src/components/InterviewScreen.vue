@@ -16,7 +16,11 @@
           <v-btn
             v-if="currentQuestionIndex < questions.length - 1"
             :disabled="!isRecordComplete"
-            :class="['next-question-btn', { 'flash-color': isRecordComplete }]"
+            :class="[
+              'v-btn',
+              'next-question-btn',
+              { 'flash-color': isRecordComplete },
+            ]"
             @click="nextQuestion"
           >
             Next Question
@@ -24,7 +28,11 @@
           <v-btn
             v-else
             :disabled="!isRecordComplete"
-            :class="['submit-btn', { 'flash-color': isRecordComplete }]"
+            :class="[
+              'v-btn',
+              'submit-btn',
+              { 'flash-color': isRecordComplete },
+            ]"
             @click="submit"
           >
             Submit
@@ -55,10 +63,16 @@
             v-if="!isRecording && !isRecordComplete"
             @click="startRecording"
             color="success"
+            class="v-btn"
           >
             Start Recording
           </v-btn>
-          <v-btn v-if="isRecording" @click="stopRecording" color="error">
+          <v-btn
+            v-if="isRecording"
+            @click="stopRecording"
+            color="error"
+            class="v-btn"
+          >
             End Recording
           </v-btn>
         </div>
@@ -116,6 +130,9 @@ export default {
         },
       ],
     };
+  },
+  props: {
+    id: String,
   },
   mounted() {
     this.initCamera();
@@ -182,7 +199,7 @@ export default {
 
       try {
         const response = await axios.post(
-          "http://localhost:3001/api/transcribe",
+          "http://localhost:3000/transcribe",
           formData,
           {
             headers: {
@@ -226,7 +243,6 @@ export default {
     },
     submit() {
       console.log("Submit answers:", this.questions);
-      // Implement the submission logic
     },
     draw() {
       const canvas = this.$refs.audioCanvas;
@@ -401,6 +417,9 @@ video {
     font-size: 18px;
     color: #333;
   }
+}
+.v-btn {
+  padding: 0px 10px;
 }
 
 .audio-canvas {
