@@ -2,7 +2,7 @@
   <div class="main-container">
     <v-container>
       <v-card class="card">
-        <v-card-title>
+        <v-card-title class="page-title">
           <span>{{ isEdit ? "Edit Interview" : "Add Interview" }}</span>
         </v-card-title>
         <v-card-text>
@@ -49,12 +49,23 @@
                   outlined
                   required
                 ></v-textarea>
+                <v-select
+                  class="question-time"
+                  v-model="question.time"
+                  :items="[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"
+                  label="Question time (mins)"
+                  required
+                ></v-select>
               </div>
             </div>
 
-            <v-btn class="v-btn" size="x-large" type="submit" color="primary">{{
-              isEdit ? "Save Changes" : "Submit"
-            }}</v-btn>
+            <v-btn
+              class="save-button"
+              size="x-large"
+              type="submit"
+              color="primary"
+              >{{ isEdit ? "Save Changes" : "Submit" }}</v-btn
+            >
           </v-form>
         </v-card-text>
       </v-card>
@@ -153,8 +164,12 @@ export default {
   justify-content: center;
   .card {
     padding: 20px;
-    .v-btn {
-      font-size: 16px;
+    .page-title {
+      margin-bottom: 10px;
+    }
+    .question-time {
+      max-width: 180px;
+      max-height: 56px;
     }
   }
 }
@@ -162,5 +177,8 @@ export default {
   display: flex;
   justify-content: space-between;
   gap: 10px;
+}
+.save-button {
+  padding: 0px 20px;
 }
 </style>

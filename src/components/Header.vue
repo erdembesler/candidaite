@@ -1,26 +1,9 @@
 <template>
   <header class="header">
     <div class="logo">
-      <span
-        style="
-          color: #575757;
-          font-size: 24px;
-          font-weight: 300;
-          line-break: auto;
-        "
-        class="logo-text"
-        >candid</span
-      >
-      <span
-        style="color: #5162ec; font-size: 24px; font-weight: 600"
-        class="logo-text"
-        >AI</span
-      >
-      <span
-        style="color: #575757; font-size: 24px; font-weight: 300"
-        class="logo-text"
-        >te</span
-      >
+      <span class="logo-text-candid">candid</span>
+      <span class="logo-text-ai">AI</span>
+      <span class="logo-text-te">te</span>
     </div>
   </header>
 </template>
@@ -56,5 +39,21 @@ export default {
 }
 .black-divider {
   background-color: black;
+}
+.logo-text-candid {
+  color: #575757;
+  font-size: 24px;
+  font-weight: 300;
+  line-break: auto;
+}
+.logo-text-ai {
+  color: #5162ec;
+  font-size: 24px;
+  font-weight: 600;
+}
+.logo-text-te {
+  color: #575757;
+  font-size: 24px;
+  font-weight: 300;
 }
 </style>

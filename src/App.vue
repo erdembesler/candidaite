@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <Header style="z-index: 123123"></Header>
+    <Header style="z-index: 99999"></Header>
     <v-main>
       <router-view />
     </v-main>

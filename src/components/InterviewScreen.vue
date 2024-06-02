@@ -1,6 +1,31 @@
 <template>
   <div class="main-container">
-    <div class="interview-stream">
+    <div class="cadidate-info-div" v-if="!isStartInterview">
+      <v-card class="cadidate-info-card">
+        <v-card-title class="headline">Enter Your Information</v-card-title>
+        <v-card-text>
+          <v-text-field
+            v-model="candidate.name"
+            label="Name"
+            required
+          ></v-text-field>
+          <v-text-field
+            v-model="candidate.surname"
+            label="Surname"
+            required
+          ></v-text-field>
+          <v-text-field
+            v-model="candidate.email"
+            label="Email"
+            required
+          ></v-text-field>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn color="primary" @click="startInterview">Start Interview</v-btn>
+        </v-card-actions>
+      </v-card>
+    </div>
+    <div v-if="isStartInterview" class="interview-stream">
       <div class="content-container">
         <div class="top-bar">
           <div :class="['timer-container', { flashing: !isRecordComplete }]">
@@ -99,6 +124,12 @@ export default {
       dataArray: null,
       currentQuestionIndex: 0,
       questions: [],
+      candidate: {
+        name: "",
+        surname: "",
+        email: "",
+      },
+      isStartInterview: false,
     };
   },
   props: {
@@ -106,9 +137,6 @@ export default {
   },
   beforeMount() {
     this.fetchInterview();
-  },
-  mounted() {
-    this.initCamera();
   },
   methods: {
     async initCamera() {
@@ -125,8 +153,10 @@ export default {
         const response = await axios.get(
           `http://localhost:3000/interviews/${id}/candidates`
         );
-        this.questions = response.data.questions;
-        this.startTimer();
+        console.log(response.data);
+        const { questions, title } = response.data;
+        this.questions = questions;
+        this.interviewTitle = title;
       } catch (error) {
         console.error("Error fetching interview:", error);
       }
@@ -225,8 +255,25 @@ export default {
         this.startTimer();
       }
     },
-    submit() {
-      console.log("Submit answers:", this.questions);
+    async submit() {
+      try {
+        const candidateData = {
+          name: this.candidate.name,
+          surname: this.candidate.surname,
+          email: this.candidate.email,
+          questions: this.questions,
+          title: this.interviewTitle,
+          interviewId: this.$route.params.id || this.id,
+          status: "WAITING_FOR_EVALUTAION",
+        };
+        await axios.post(
+          "http://localhost:3000/candidate-interviews",
+          candidateData
+        );
+        console.log("Submitted answers:", candidateData);
+      } catch (error) {
+        console.error("Error submitting candidate interview:", error);
+      }
     },
     draw() {
       const canvas = this.$refs.audioCanvas;
@@ -268,6 +315,15 @@ export default {
 
       drawVisual();
     },
+    startInterview() {
+      this.isStartInterview = true;
+
+      this.$nextTick(() => {
+        this.initCamera();
+      });
+
+      this.startTimer();
+    },
   },
   watch: {
     currentQuestionIndex(newIndex, oldIndex) {
@@ -290,6 +346,13 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+
+  .cadidate-info-div {
+    min-width: 500px;
+    .candidate-info-card {
+      padding: 40px;
+    }
+  }
 }
 
 .interview-stream {
@@ -407,6 +470,9 @@ video {
   padding: 0px 10px;
 }
 
+.headline {
+  margin-bottom: 10px;
+}
 .audio-canvas {
   width: 50px;
   height: 22px;
