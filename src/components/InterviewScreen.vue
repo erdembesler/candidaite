@@ -230,7 +230,7 @@ export default {
     },
     startTimer() {
       this.currentQuestionTimer =
-        this.questions[this.currentQuestionIndex].time || 120; // default 2 minutes
+        this.questions[this.currentQuestionIndex].time * 60; // default 2 minutes
       this.intervalId = setInterval(() => {
         if (this.currentQuestionTimer > 0) {
           this.currentQuestionTimer--;

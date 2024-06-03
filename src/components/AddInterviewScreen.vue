@@ -100,9 +100,11 @@ export default {
     const form = ref(null);
 
     const initializeQuestions = (count) => {
-      interview.value.questions = Array.from({ length: count }, () => ({
+      interview.value.questions = Array.from({ length: count }, (_, index) => ({
         questionText: "",
         answerText: "",
+        time: 1,
+        id: `${index + 1}`,
       }));
     };
 
