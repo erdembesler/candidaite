@@ -1,30 +1,9 @@
 <template>
   <div class="main-container">
-    <div class="cadidate-info-div" v-if="!isStartInterview">
-      <v-card class="cadidate-info-card">
-        <v-card-title class="headline">Enter Your Information</v-card-title>
-        <v-card-text>
-          <v-text-field
-            v-model="candidate.name"
-            label="Name"
-            required
-          ></v-text-field>
-          <v-text-field
-            v-model="candidate.surname"
-            label="Surname"
-            required
-          ></v-text-field>
-          <v-text-field
-            v-model="candidate.email"
-            label="Email"
-            required
-          ></v-text-field>
-        </v-card-text>
-        <v-card-actions>
-          <v-btn color="primary" @click="startInterview">Start Interview</v-btn>
-        </v-card-actions>
-      </v-card>
-    </div>
+    <candidate-info-form
+      v-if="!isStartInterview"
+      @saveCandidateInfo="saveCandidateInfo"
+    />
     <div v-if="isStartInterview" class="interview-stream">
       <div class="content-container">
         <div class="top-bar">
@@ -108,8 +87,12 @@
 
 <script>
 import axios from "axios";
+import CandidateInfoForm from "./CandidateInfoForm.vue";
 
 export default {
+  components: {
+    CandidateInfoForm,
+  },
   data() {
     return {
       mediaRecorder: null,
@@ -264,7 +247,7 @@ export default {
           questions: this.questions,
           title: this.interviewTitle,
           interviewId: this.$route.params.id || this.id,
-          status: "WAITING_FOR_EVALUTAION",
+          status: "WAITING_FOR_EVALUATION",
         };
         await axios.post(
           "http://localhost:3000/candidate-interviews",
@@ -324,6 +307,12 @@ export default {
 
       this.startTimer();
     },
+    saveCandidateInfo(candidate) {
+      this.candidate.email = candidate.email;
+      this.candidate.name = candidate.name;
+      this.candidate.surname = candidate.surname;
+      this.startInterview();
+    },
   },
   watch: {
     currentQuestionIndex(newIndex, oldIndex) {
@@ -346,13 +335,6 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-
-  .cadidate-info-div {
-    min-width: 500px;
-    .candidate-info-card {
-      padding: 40px;
-    }
-  }
 }
 
 .interview-stream {

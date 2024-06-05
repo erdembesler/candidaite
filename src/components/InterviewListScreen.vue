@@ -20,7 +20,7 @@
             <template #item="{ item }">
               <tr>
                 <td>{{ item.title }}</td>
-                <td>{{ item.description }}</td>
+                <td style="max-width: 300px">{{ item.description }}</td>
                 <td>{{ item.questions.length }}</td>
                 <td>
                   <v-btn
@@ -29,8 +29,14 @@
                     @click="editInterview(item.id)"
                     >Edit</v-btn
                   >
-                  <v-btn color="error" @click="deleteInterview(item.id)"
+                  <v-btn
+                    style="margin-right: 10px"
+                    color="error"
+                    @click="deleteInterview(item.id)"
                     >Delete</v-btn
+                  >
+                  <v-btn color="success" @click="goToInterview(item.id)"
+                    >Go!</v-btn
                   >
                 </td>
               </tr>
@@ -163,6 +169,10 @@ export default {
       router.push({ name: "EditInterview", params: { id } });
     };
 
+    const goToInterview = (id) => {
+      router.push({ name: "Interview", params: { id } });
+    };
+
     onMounted(fetchInterviews);
 
     return {
@@ -172,6 +182,7 @@ export default {
       deleteInterview,
       goToAddInterview,
       editInterview,
+      goToInterview,
     };
   },
 };
