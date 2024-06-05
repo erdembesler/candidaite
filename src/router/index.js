@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import InterviewScreen from '../components/InterviewScreen.vue';
 import InterviewListScreen from '../components/InterviewListScreen.vue';
 import AddInterviewScreen from '../components/AddInterviewScreen.vue';
+import InterviewResultListScreen from '../components/InterviewResultListScreen.vue';
 
 const routes = [
   {
@@ -28,6 +29,11 @@ const routes = [
     name: 'EditInterview', 
     component: AddInterviewScreen, 
     props: true 
+  },
+  {
+    path: '/interview-result-list',
+    name: 'InterviewResultList',
+    component: InterviewResultListScreen,
   },
 ];
 
