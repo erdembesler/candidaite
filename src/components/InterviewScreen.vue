@@ -1,46 +1,29 @@
 <template>
-  <div class="main-container">
+  <div :class="['main-container']">
     <candidate-info-form
-      v-if="!isStartInterview"
-      @saveCandidateInfo="saveCandidateInfo"
+      v-if="!isStartInterview && !showInterviewInfo"
+      @saveCandidateInfo="showInterviewInfoScreen"
     />
-    <div v-if="isStartInterview" class="interview-stream">
-      <div class="content-container">
+    <interview-info v-if="showInterviewInfo" @startInterview="startInterview" />
+    <div v-if="isStartInterview" :class="['interview-stream']">
+      <div v-if="showOverlay" class="overlay">
+        <div class="countdown-text">
+          {{ questions[currentQuestionIndex].questionText }}
+        </div>
+        <div class="countdown">{{ countdown }}</div>
+      </div>
+      <div :class="['content-container', { blurred: showOverlay }]">
         <div class="top-bar">
           <div :class="['timer-container', { flashing: !isRecordComplete }]">
             <div class="timer">{{ formatTime(currentQuestionTimer) }}</div>
           </div>
           <div class="question-header">
             <b>
-              <span class="question-number"
-                >{{ currentQuestionIndex + 1 }} / {{ questions.length }}</span
-              >
+              <span class="question-number">
+                {{ currentQuestionIndex + 1 }} / {{ questions.length }}
+              </span>
             </b>
           </div>
-          <v-btn
-            v-if="currentQuestionIndex < questions.length - 1"
-            :disabled="!isRecordComplete"
-            :class="[
-              'v-btn',
-              'next-question-btn',
-              { 'flash-color': isRecordComplete },
-            ]"
-            @click="nextQuestion"
-          >
-            Next Question
-          </v-btn>
-          <v-btn
-            v-else
-            :disabled="!isRecordComplete"
-            :class="[
-              'v-btn',
-              'submit-btn',
-              { 'flash-color': isRecordComplete },
-            ]"
-            @click="submit"
-          >
-            Submit
-          </v-btn>
         </div>
         <div class="content">
           <div class="video-col">
@@ -57,20 +40,6 @@
           </div>
         </div>
         <div :class="['controls', { 'single-element': !isRecording }]">
-          <canvas
-            v-if="isRecording"
-            ref="audioCanvas"
-            class="audio-canvas"
-          ></canvas>
-
-          <v-btn
-            v-if="!isRecording && !isRecordComplete"
-            @click="startRecording"
-            color="success"
-            class="v-btn"
-          >
-            Start Recording
-          </v-btn>
           <v-btn
             v-if="isRecording"
             @click="stopRecording"
@@ -82,16 +51,21 @@
         </div>
       </div>
     </div>
+    <div v-if="isEvaluating" class="evaluation-screen">
+      <h2>Your interview is being evaluated...</h2>
+    </div>
   </div>
 </template>
 
 <script>
 import axios from "axios";
 import CandidateInfoForm from "./CandidateInfoForm.vue";
+import InterviewInfo from "./InterviewInfo.vue";
 
 export default {
   components: {
     CandidateInfoForm,
+    InterviewInfo,
   },
   data() {
     return {
@@ -99,8 +73,12 @@ export default {
       audioChunks: [],
       currentQuestionTimer: 0,
       intervalId: null,
+      countdown: 5,
       isRecording: false,
       isRecordComplete: false,
+      showOverlay: false,
+      isEvaluating: false,
+      showInterviewInfo: false,
       stream: null,
       audioContext: null,
       analyser: null,
@@ -121,7 +99,21 @@ export default {
   beforeMount() {
     this.fetchInterview();
   },
+  mounted() {
+    window.addEventListener("beforeunload", this.beforeUnloadHandler);
+  },
+  beforeUnmount() {
+    window.removeEventListener("beforeunload", this.beforeUnloadHandler);
+  },
   methods: {
+    beforeUnloadHandler(event) {
+      if (this.isStartInterview) {
+        const message =
+          "Are you sure you want to leave? Your progress will be lost.";
+        event.returnValue = message;
+        return message;
+      }
+    },
     async initCamera() {
       const video = this.$refs.video;
       this.stream = await navigator.mediaDevices.getUserMedia({
@@ -136,13 +128,24 @@ export default {
         const response = await axios.get(
           `http://localhost:3000/interviews/${id}/candidates`
         );
-        console.log(response.data);
         const { questions, title } = response.data;
         this.questions = questions;
         this.interviewTitle = title;
       } catch (error) {
         console.error("Error fetching interview:", error);
       }
+    },
+    startCountdown() {
+      this.showOverlay = true;
+      this.countdown = 5;
+      const countdownInterval = setInterval(() => {
+        this.countdown--;
+        if (this.countdown === 0) {
+          clearInterval(countdownInterval);
+          this.showOverlay = false;
+          this.startRecording();
+        }
+      }, 1000);
     },
     async startRecording() {
       const audioStream = await navigator.mediaDevices.getUserMedia({
@@ -174,9 +177,7 @@ export default {
       const bufferLength = this.analyser.frequencyBinCount;
       this.dataArray = new Uint8Array(bufferLength);
 
-      this.$nextTick(() => {
-        this.draw();
-      });
+      this.startTimer();
     },
     stopRecording() {
       if (this.mediaRecorder) {
@@ -185,6 +186,15 @@ export default {
       this.isRecordComplete = true;
       this.isRecording = false;
       this.stopTimer();
+
+      if (this.currentQuestionIndex < this.questions.length - 1) {
+        this.currentQuestionIndex++;
+        this.startCountdown();
+      } else {
+        this.isEvaluating = true;
+        this.submit();
+      }
+
       if (this.audioContext && this.audioContext.state !== "closed") {
         this.audioContext.close();
       }
@@ -204,7 +214,6 @@ export default {
             },
           }
         );
-        console.log(response.data.transcription);
         this.questions[this.currentQuestionIndex].answerText =
           response.data.transcription;
       } catch (error) {
@@ -213,7 +222,7 @@ export default {
     },
     startTimer() {
       this.currentQuestionTimer =
-        this.questions[this.currentQuestionIndex].time * 60; // default 2 minutes
+        this.questions[this.currentQuestionIndex].time * 60;
       this.intervalId = setInterval(() => {
         if (this.currentQuestionTimer > 0) {
           this.currentQuestionTimer--;
@@ -231,13 +240,6 @@ export default {
       const secs = seconds % 60;
       return `${minutes}:${secs < 10 ? "0" : ""}${secs}`;
     },
-    nextQuestion() {
-      if (this.currentQuestionIndex < this.questions.length - 1) {
-        this.currentQuestionIndex++;
-        this.isRecordComplete = false;
-        this.startTimer();
-      }
-    },
     async submit() {
       try {
         const candidateData = {
@@ -253,65 +255,26 @@ export default {
           "http://localhost:3000/candidate-interviews",
           candidateData
         );
-        console.log("Submitted answers:", candidateData);
       } catch (error) {
         console.error("Error submitting candidate interview:", error);
       }
     },
-    draw() {
-      const canvas = this.$refs.audioCanvas;
-      const canvasCtx = canvas.getContext("2d");
-
-      const drawVisual = () => {
-        if (!this.isRecording) return; // Stop drawing when not recording
-        requestAnimationFrame(drawVisual);
-
-        this.analyser.getByteTimeDomainData(this.dataArray);
-
-        canvasCtx.fillStyle = "rgb(240, 244, 248)";
-        canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
-
-        canvasCtx.lineWidth = 4;
-        canvasCtx.strokeStyle = "rgb(81, 98, 236)";
-
-        canvasCtx.beginPath();
-
-        const sliceWidth = (canvas.width * 1.0) / this.dataArray.length;
-        let x = 0;
-
-        for (let i = 0; i < this.dataArray.length; i++) {
-          const v = this.dataArray[i] / 128.0;
-          const y = (v * canvas.height) / 2;
-
-          if (i === 0) {
-            canvasCtx.moveTo(x, y);
-          } else {
-            canvasCtx.lineTo(x, y);
-          }
-
-          x += sliceWidth;
-        }
-
-        canvasCtx.lineTo(canvas.width, canvas.height / 2);
-        canvasCtx.stroke();
-      };
-
-      drawVisual();
+    showInterviewInfoScreen(candidate) {
+      this.candidate.email = candidate.email;
+      this.candidate.name = candidate.name;
+      this.candidate.surname = candidate.surname;
+      localStorage.setItem("candidate", JSON.stringify(this.candidate));
+      this.showInterviewInfo = true;
     },
     startInterview() {
+      this.showInterviewInfo = false;
       this.isStartInterview = true;
 
       this.$nextTick(() => {
         this.initCamera();
       });
 
-      this.startTimer();
-    },
-    saveCandidateInfo(candidate) {
-      this.candidate.email = candidate.email;
-      this.candidate.name = candidate.name;
-      this.candidate.surname = candidate.surname;
-      this.startInterview();
+      this.startCountdown();
     },
   },
   watch: {
@@ -321,6 +284,12 @@ export default {
         this.startTimer();
       }
     },
+  },
+  created() {
+    const savedCandidate = JSON.parse(localStorage.getItem("candidate"));
+    if (savedCandidate) {
+      this.candidate = savedCandidate;
+    }
   },
 };
 </script>
@@ -337,8 +306,38 @@ export default {
   align-items: center;
 }
 
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  z-index: 1000;
+}
+
+.blurred {
+  filter: blur(20px);
+  transition: filter 0.5s ease-in-out;
+}
+
+.countdown {
+  color: #575757;
+  font-size: 80px;
+}
+
+.countdown-text {
+  color: #575757;
+  font-size: 35px;
+}
+
 .interview-stream {
   display: flex;
+  flex-direction: column;
   align-items: center;
   text-align: center;
   margin-bottom: 180px;
@@ -349,8 +348,8 @@ export default {
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   padding: 30px 60px;
-  width: 800px;
   width: 100%;
+  max-width: 900px;
 }
 
 .top-bar {
@@ -358,14 +357,15 @@ export default {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+  width: 100%;
 }
 
 .timer-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 60px;
-  height: 60px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   background-color: rgb(81, 98, 236);
   color: white;
@@ -376,15 +376,34 @@ export default {
 }
 
 .timer {
-  font-size: 20px;
+  font-size: 24px;
   font-weight: bold;
+}
+
+.question-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.question-number {
+  font-size: 30px;
+  font-weight: 600;
+  color: black;
+}
+
+.question-number-text {
+  font-size: 20px;
+  color: rgb(81, 98, 236);
 }
 
 .content {
   display: flex;
-  justify-content: flex-start;
+  justify-content: space-around;
   flex-direction: row;
   margin-bottom: 30px;
+  width: 100%;
 }
 
 .video-col {
@@ -392,8 +411,8 @@ export default {
 }
 
 .video-container {
-  height: 400px;
-  width: 550px;
+  height: 300px;
+  width: 400px;
   background-color: #000;
   border-radius: 11px;
 }
@@ -408,36 +427,18 @@ video {
 .controls {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   text-align: center;
   min-height: 50px;
 }
 
 .controls.single-element {
-  justify-content: flex-end; /* Use flex-end to align single element to the right */
+  justify-content: flex-end;
 }
 
 .question-col {
-  width: 350px;
-}
-
-.question-header {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-}
-
-.question-number {
-  font-size: 45px;
-  font-weight: 600;
-  color: black;
-}
-
-.question-number-text {
-  font-size: 20px;
-  color: rgb(81, 98, 236);
+  width: 400px;
 }
 
 .question {
@@ -448,6 +449,7 @@ video {
     color: #333;
   }
 }
+
 .v-btn {
   padding: 0px 10px;
 }
@@ -455,6 +457,7 @@ video {
 .headline {
   margin-bottom: 10px;
 }
+
 .audio-canvas {
   width: 50px;
   height: 22px;
@@ -462,9 +465,6 @@ video {
   background: rgba(0, 0, 0, 0.1);
   box-shadow: 0 10px 12px rgb(240, 244, 248);
   border: 1px rgb(255, 126, 126) solid;
-}
-.next-question-btn {
-  color: white;
 }
 
 .flash-color {
@@ -492,6 +492,17 @@ video {
   }
   100% {
     background-color: rgb(81, 98, 236);
+  }
+}
+
+.evaluation-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  text-align: center;
+  h2 {
+    color: #333;
   }
 }
 </style>
