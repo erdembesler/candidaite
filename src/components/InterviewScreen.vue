@@ -6,53 +6,27 @@
     />
     <interview-info v-if="showInterviewInfo" @startInterview="startInterview" />
     <div v-if="isStartInterview" :class="['interview-stream']">
-      <div v-if="showOverlay" class="overlay">
+      <div class="overlay">
         <div class="countdown-text">
           {{ questions[currentQuestionIndex].questionText }}
         </div>
-        <div class="countdown">{{ countdown }}</div>
-      </div>
-      <div :class="['content-container', { blurred: showOverlay }]">
-        <div class="top-bar">
-          <div :class="['timer-container', { flashing: !isRecordComplete }]">
-            <div class="timer">{{ formatTime(currentQuestionTimer) }}</div>
-          </div>
-          <div class="question-header">
-            <b>
-              <span class="question-number">
-                {{ currentQuestionIndex + 1 }} / {{ questions.length }}
-              </span>
-            </b>
+        <div v-if="countdown" class="countdown">{{ countdown }}</div>
+        <div v-show="isRecording" class="video-col">
+          <div class="video-container">
+            <video ref="video" autoplay muted></video>
           </div>
         </div>
-        <div class="content">
-          <div class="video-col">
-            <div class="video-container">
-              <video ref="video" autoplay muted></video>
-            </div>
-          </div>
-          <div class="question-col">
-            <div class="question">
-              <span class="question-text">
-                {{ questions[currentQuestionIndex].questionText }}
-              </span>
-            </div>
-          </div>
-        </div>
-        <div :class="['controls', { 'single-element': !isRecording }]">
+        <div :class="['controls']">
           <v-btn
+            size="x-large"
             v-if="isRecording"
             @click="stopRecording"
-            color="error"
             class="v-btn"
           >
             End Recording
           </v-btn>
         </div>
       </div>
-    </div>
-    <div v-if="isEvaluating" class="evaluation-screen">
-      <h2>Your interview is being evaluated...</h2>
     </div>
   </div>
 </template>
@@ -205,17 +179,16 @@ export default {
       formData.append("file", audioBlob, "audio.wav");
 
       try {
-        const response = await axios.post(
-          "http://localhost:3000/transcribe",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
-        this.questions[this.currentQuestionIndex].answerText =
-          response.data.transcription;
+        // const response = await axios.post(
+        //   "http://localhost:3000/transcribe",
+        //   formData,
+        //   {
+        //     headers: {
+        //       "Content-Type": "multipart/form-data",
+        //     },
+        //   }
+        // );
+        this.questions[this.currentQuestionIndex].answerText = "";
       } catch (error) {
         console.error("Error transcribing audio:", error);
       }
@@ -407,12 +380,12 @@ export default {
 }
 
 .video-col {
-  margin-right: 30px;
+  margin: 30px 0px;
 }
 
 .video-container {
-  height: 300px;
-  width: 400px;
+  height: 400px;
+  width: 500px;
   background-color: #000;
   border-radius: 11px;
 }
@@ -433,10 +406,6 @@ video {
   min-height: 50px;
 }
 
-.controls.single-element {
-  justify-content: flex-end;
-}
-
 .question-col {
   width: 400px;
 }
@@ -451,7 +420,8 @@ video {
 }
 
 .v-btn {
-  padding: 0px 10px;
+  padding: 0px 20px;
+  font-size: 20px;
 }
 
 .headline {
