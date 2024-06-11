@@ -35,7 +35,7 @@
       </v-card-text>
       <div class="button-div">
         <v-btn :disabled="!valid" color="primary" @click="saveCandidateInfo"
-          >Start Interview</v-btn
+          >Next</v-btn
         >
       </div>
     </v-card>
@@ -117,6 +117,7 @@ export default {
       flex-direction: row;
       .v-btn {
         padding: 0px 10px;
+        width: 100%;
       }
     }
   }

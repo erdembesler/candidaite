@@ -5,7 +5,10 @@
       @saveCandidateInfo="showInterviewInfoScreen"
     />
     <interview-info v-if="showInterviewInfo" @startInterview="startInterview" />
-    <div v-show="!isRecording && isStartInterview" class="interview-countdown">
+    <div
+      v-show="!isRecording && isStartInterview && !isEvaluated && !isEvaluating"
+      class="interview-countdown"
+    >
       <div class="countdown-text">
         {{ questions[currentQuestionIndex].questionText }}
       </div>
@@ -49,7 +52,15 @@
             <div class="controls">
               <v-btn
                 size="large"
-                v-if="isRecording"
+                v-if="isRecording && !isLastQuestion"
+                @click="stopRecording"
+                class="complete-button"
+              >
+                {{ isLastQuestion ? "Complete" : "Next" }}
+              </v-btn>
+              <v-btn
+                size="large"
+                v-if="isRecording && isLastQuestion"
                 @click="stopRecording"
                 class="complete-button"
               >
@@ -74,17 +85,24 @@
         </div>
       </div>
     </div>
+    <evaluation-status
+      v-if="isEvaluating"
+      :isEvaluated="isEvaluated"
+      :evaluationResponse="evaluationResponse"
+    />
   </div>
 </template>
 <script>
 import axios from "axios";
 import CandidateInfoForm from "./CandidateInfoForm.vue";
 import InterviewInfo from "./InterviewInfo.vue";
+import EvaluationStatus from "./EvaluationStatus.vue";
 
 export default {
   components: {
     CandidateInfoForm,
     InterviewInfo,
+    EvaluationStatus,
   },
   data() {
     return {
@@ -112,10 +130,17 @@ export default {
       progressPercentage: 0,
       elapsedTime: 0,
       audioLevel: 0,
+      isEvaluated: false,
+      evaluationResponse: null,
     };
   },
   props: {
     id: String,
+  },
+  computed: {
+    isLastQuestion() {
+      return this.currentQuestionIndex === this.questions.length - 1;
+    },
   },
   beforeMount() {
     this.fetchInterview();
@@ -209,17 +234,20 @@ export default {
       this.isRecording = false;
       this.stopTimer();
 
-      if (this.currentQuestionIndex < this.questions.length - 1) {
-        this.currentQuestionIndex++;
-        this.startCountdown();
-      } else {
+      if (this.isLastQuestion) {
         this.isEvaluating = true;
         this.submit();
+      } else {
+        this.currentQuestionIndex++;
+        this.startCountdown();
       }
 
       if (this.audioContext && this.audioContext.state !== "closed") {
         this.audioContext.close();
       }
+    },
+    nextQuestion() {
+      this.stopRecording();
     },
     async handleStopRecording() {
       const audioBlob = new Blob(this.audioChunks, { type: "audio/wav" });
@@ -227,13 +255,23 @@ export default {
       formData.append("file", audioBlob, "audio.wav");
 
       try {
-        this.questions[this.currentQuestionIndex].answerText = "";
+        const response = await axios.post(
+          "http://localhost:3000/transcribe",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        this.questions[this.currentQuestionIndex].answerText =
+          response.data.transcription;
       } catch (error) {
         console.error("Error transcribing audio:", error);
       }
     },
     startTimer() {
-      this.stopTimer(); // Ensure any previous timer is cleared
+      this.stopTimer();
       this.currentQuestionTimer =
         this.questions[this.currentQuestionIndex].time * 60;
       this.elapsedTime = 0;
@@ -281,10 +319,13 @@ export default {
           interviewId: this.$route.params.id || this.id,
           status: "WAITING_FOR_EVALUATION",
         };
-        await axios.post(
+        const response = await axios.post(
           "http://localhost:3000/candidate-interviews",
           candidateData
         );
+        console.log(response.data);
+        this.isEvaluated = true;
+        this.evaluationResponse = response.data;
       } catch (error) {
         console.error("Error submitting candidate interview:", error);
       }
@@ -398,6 +439,7 @@ video {
 .audio-level {
   display: flex;
   align-items: center;
+  width: 100px;
 }
 
 @keyframes blink {
