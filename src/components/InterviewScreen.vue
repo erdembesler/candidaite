@@ -62,7 +62,14 @@
             <div class="record-indicator"></div>
           </div>
           <div>
-            <AvMedia :media="mediaObject" type="vbar"></AvMedia>
+            <div class="audio-level">
+              <v-icon icon="mdi-microphone"></v-icon>
+              <v-progress-linear
+                v-model="audioLevel"
+                color="green"
+                height="10"
+              ></v-progress-linear>
+            </div>
           </div>
         </div>
       </div>
@@ -104,6 +111,7 @@ export default {
       isStartInterview: false,
       progressPercentage: 0,
       elapsedTime: 0,
+      audioLevel: 0,
     };
   },
   props: {
@@ -191,6 +199,7 @@ export default {
       this.dataArray = new Uint8Array(bufferLength);
 
       this.startTimer();
+      this.updateAudioLevel();
     },
     stopRecording() {
       if (this.mediaRecorder) {
@@ -253,6 +262,13 @@ export default {
       const minutes = Math.floor(seconds / 60);
       const secs = seconds % 60;
       return `${minutes}:${secs < 10 ? "0" : ""}${secs}`;
+    },
+    updateAudioLevel() {
+      if (!this.analyser) return;
+      this.analyser.getByteFrequencyData(this.dataArray);
+      const maxVolume = Math.max(...this.dataArray);
+      this.audioLevel = (maxVolume / 255) * 100;
+      requestAnimationFrame(this.updateAudioLevel);
     },
     async submit() {
       try {
@@ -358,6 +374,7 @@ export default {
   width: 500px;
   background-color: #000;
   border-radius: 11px;
+  margin-bottom: 10px;
 }
 
 video {
@@ -376,6 +393,11 @@ video {
   background-color: rgb(197, 0, 0);
   border-radius: 50%;
   animation: blink 1.5s infinite;
+}
+
+.audio-level {
+  display: flex;
+  align-items: center;
 }
 
 @keyframes blink {
