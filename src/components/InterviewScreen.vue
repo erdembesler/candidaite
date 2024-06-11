@@ -12,14 +12,7 @@
       <div v-if="countdown" class="countdown">{{ countdown }}</div>
     </div>
     <div v-show="isRecording && isStartInterview" class="video-interview">
-      <div
-        style="
-          max-width: 430px;
-          margin-right: 20px;
-          border-right: 1px #cfcfcf solid;
-          padding-right: 10px;
-        "
-      >
+      <div class="question-section">
         <div class="question-number">
           Question <b>{{ currentQuestionIndex + 1 }} </b> of
           <b> {{ questions.length }}</b>
@@ -30,49 +23,22 @@
       </div>
 
       <div class="video-col">
-        <div
-          style="
-            height: 40px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: flex-end;
-            flex-direction: row;
-            color: #575757;
-          "
-        >
-          <div>
-            <v-icon
-              style="margin-right: 3px"
-              icon="mdi-clock-time-nine-outline"
-            ></v-icon>
-            <span style="font-size: 14px"
-              >minutes: {{ questions[currentQuestionIndex].time }}
-            </span>
-          </div>
+        <div class="time-info">
+          <v-icon
+            style="margin-right: 3px"
+            icon="mdi-clock-time-nine-outline"
+          ></v-icon>
+          <span style="font-size: 14px"
+            >minutes: {{ questions[currentQuestionIndex].time }}</span
+          >
         </div>
         <div>
-          <div style="display: flex; flex-direction: row; margin-bottom: 20px">
-            <div
-              style="
-                width: 73%;
-                background-color: #f6f6f6;
-                flex: 1;
-                border-radius: 3px 0px 0px 3px;
-                display: flex;
-                justify-content: flex-start;
-                flex-direction: row;
-                text-align: center;
-                align-items: center;
-                padding: 0px 20px 0px 10px;
-                font-size: 14px;
-              "
-            >
-              <div style="margin-right: 10px; flex: 1; min-width: fit-content">
+          <div class="progress-container">
+            <div class="progress-info">
+              <div class="response-time-label">
                 <b>Response Time:</b>
               </div>
-              <div style="margin-right: 10px; width: 40px">
-                {{ formatTime(elapsedTime) }}
-              </div>
+              <div class="response-time">{{ formatTime(elapsedTime) }}</div>
               <v-progress-linear
                 v-model="progressPercentage"
                 color="amber"
@@ -80,7 +46,7 @@
               ></v-progress-linear>
             </div>
 
-            <div style="width: 27%" class="controls">
+            <div class="controls">
               <v-btn
                 size="large"
                 v-if="isRecording"
@@ -376,7 +342,7 @@ export default {
 .countdown-text {
   color: #575757;
   font-size: 35px;
-  margin-bottom: 20x;
+  margin-bottom: 20px;
 }
 
 .content {
@@ -385,9 +351,6 @@ export default {
   flex-direction: row;
   margin-bottom: 30px;
   width: 100%;
-}
-
-.video-col {
 }
 
 .video-container {
@@ -442,5 +405,53 @@ video {
   border-radius: 0px 3px 3px 0px;
   width: 100%;
   font-weight: 600;
+}
+
+/* Moved inline styles to classes */
+.question-section {
+  max-width: 430px;
+  margin-right: 20px;
+  border-right: 1px #cfcfcf solid;
+  padding-right: 10px;
+}
+
+.time-info {
+  height: 40px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: flex-end;
+  flex-direction: row;
+  color: #575757;
+}
+
+.progress-container {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 20px;
+}
+
+.progress-info {
+  width: 73%;
+  background-color: #f6f6f6;
+  flex: 1;
+  border-radius: 3px 0px 0px 3px;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: row;
+  text-align: center;
+  align-items: center;
+  padding: 0px 20px 0px 10px;
+  font-size: 14px;
+}
+
+.response-time-label {
+  margin-right: 10px;
+  flex: 1;
+  min-width: fit-content;
+}
+
+.response-time {
+  margin-right: 10px;
+  width: 40px;
 }
 </style>
