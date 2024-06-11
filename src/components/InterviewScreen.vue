@@ -5,26 +5,98 @@
       @saveCandidateInfo="showInterviewInfoScreen"
     />
     <interview-info v-if="showInterviewInfo" @startInterview="startInterview" />
-    <div v-if="isStartInterview" :class="['interview-stream']">
-      <div class="overlay">
-        <div class="countdown-text">
+    <div v-show="!isRecording && isStartInterview" class="interview-countdown">
+      <div class="countdown-text">
+        {{ questions[currentQuestionIndex].questionText }}
+      </div>
+      <div v-if="countdown" class="countdown">{{ countdown }}</div>
+    </div>
+    <div v-show="isRecording && isStartInterview" class="video-interview">
+      <div
+        style="
+          max-width: 430px;
+          margin-right: 20px;
+          border-right: 1px #cfcfcf solid;
+          padding-right: 10px;
+        "
+      >
+        <div class="question-number">
+          Question <b>{{ currentQuestionIndex + 1 }} </b> of
+          <b> {{ questions.length }}</b>
+        </div>
+        <div class="question-text">
           {{ questions[currentQuestionIndex].questionText }}
         </div>
-        <div v-if="countdown" class="countdown">{{ countdown }}</div>
-        <div v-show="isRecording" class="video-col">
+      </div>
+
+      <div class="video-col">
+        <div
+          style="
+            height: 40px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: flex-end;
+            flex-direction: row;
+            color: #575757;
+          "
+        >
+          <div>
+            <v-icon
+              style="margin-right: 3px"
+              icon="mdi-clock-time-nine-outline"
+            ></v-icon>
+            <span style="font-size: 14px"
+              >minutes: {{ questions[currentQuestionIndex].time }}
+            </span>
+          </div>
+        </div>
+        <div>
+          <div style="display: flex; flex-direction: row; margin-bottom: 20px">
+            <div
+              style="
+                width: 73%;
+                background-color: #f6f6f6;
+                flex: 1;
+                border-radius: 3px 0px 0px 3px;
+                display: flex;
+                justify-content: flex-start;
+                flex-direction: row;
+                text-align: center;
+                align-items: center;
+                padding: 0px 20px 0px 10px;
+                font-size: 14px;
+              "
+            >
+              <div style="margin-right: 10px; flex: 1; min-width: fit-content">
+                <b>Response Time:</b>
+              </div>
+              <div style="margin-right: 10px; width: 40px">
+                {{ formatTime(elapsedTime) }}
+              </div>
+              <v-progress-linear
+                v-model="progressPercentage"
+                color="amber"
+                style="height: 25px; transition: width 1s linear"
+              ></v-progress-linear>
+            </div>
+
+            <div style="width: 27%" class="controls">
+              <v-btn
+                size="large"
+                v-if="isRecording"
+                @click="stopRecording"
+                class="complete-button"
+              >
+                Complete
+              </v-btn>
+            </div>
+          </div>
           <div class="video-container">
             <video ref="video" autoplay muted></video>
           </div>
-        </div>
-        <div :class="['controls']">
-          <v-btn
-            size="x-large"
-            v-if="isRecording"
-            @click="stopRecording"
-            class="v-btn"
-          >
-            End Recording
-          </v-btn>
+          <div>
+            <AvMedia :media="mediaObject" type="vbar"></AvMedia>
+          </div>
         </div>
       </div>
     </div>
@@ -50,7 +122,6 @@ export default {
       countdown: 5,
       isRecording: false,
       isRecordComplete: false,
-      showOverlay: false,
       isEvaluating: false,
       showInterviewInfo: false,
       stream: null,
@@ -65,6 +136,8 @@ export default {
         email: "",
       },
       isStartInterview: false,
+      progressPercentage: 0,
+      elapsedTime: 0,
     };
   },
   props: {
@@ -78,6 +151,7 @@ export default {
   },
   beforeUnmount() {
     window.removeEventListener("beforeunload", this.beforeUnloadHandler);
+    this.stopTimer(); // Ensure interval is cleared on unmount
   },
   methods: {
     beforeUnloadHandler(event) {
@@ -110,14 +184,13 @@ export default {
       }
     },
     startCountdown() {
-      this.showOverlay = true;
       this.countdown = 5;
       const countdownInterval = setInterval(() => {
         this.countdown--;
         if (this.countdown === 0) {
           clearInterval(countdownInterval);
-          this.showOverlay = false;
           this.startRecording();
+          this.elapsedTime = 0;
         }
       }, 1000);
     },
@@ -179,34 +252,36 @@ export default {
       formData.append("file", audioBlob, "audio.wav");
 
       try {
-        // const response = await axios.post(
-        //   "http://localhost:3000/transcribe",
-        //   formData,
-        //   {
-        //     headers: {
-        //       "Content-Type": "multipart/form-data",
-        //     },
-        //   }
-        // );
         this.questions[this.currentQuestionIndex].answerText = "";
       } catch (error) {
         console.error("Error transcribing audio:", error);
       }
     },
     startTimer() {
+      this.stopTimer(); // Ensure any previous timer is cleared
       this.currentQuestionTimer =
         this.questions[this.currentQuestionIndex].time * 60;
+      this.elapsedTime = 0;
       this.intervalId = setInterval(() => {
         if (this.currentQuestionTimer > 0) {
           this.currentQuestionTimer--;
+          this.elapsedTime++;
+          this.updateProgress();
         } else {
           this.stopRecording();
         }
       }, 1000);
     },
     stopTimer() {
-      clearInterval(this.intervalId);
+      if (this.intervalId) {
+        clearInterval(this.intervalId);
+        this.intervalId = null;
+      }
       this.currentQuestionTimer = 0;
+    },
+    updateProgress() {
+      const totalTime = this.questions[this.currentQuestionIndex].time * 60;
+      this.progressPercentage = (this.elapsedTime / totalTime) * 100;
     },
     formatTime(seconds) {
       const minutes = Math.floor(seconds / 60);
@@ -279,18 +354,13 @@ export default {
   align-items: center;
 }
 
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+.interview-countdown {
   background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
   display: flex;
   justify-content: center;
   flex-direction: column;
   align-items: center;
-  z-index: 1000;
+  margin-bottom: 50px;
 }
 
 .blurred {
@@ -306,69 +376,7 @@ export default {
 .countdown-text {
   color: #575757;
   font-size: 35px;
-}
-
-.interview-stream {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  margin-bottom: 180px;
-}
-
-.content-container {
-  background-color: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  padding: 30px 60px;
-  width: 100%;
-  max-width: 900px;
-}
-
-.top-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  width: 100%;
-}
-
-.timer-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background-color: rgb(81, 98, 236);
-  color: white;
-}
-
-.timer-container.flashing {
-  animation: flashTimer 2s infinite;
-}
-
-.timer {
-  font-size: 24px;
-  font-weight: bold;
-}
-
-.question-header {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-}
-
-.question-number {
-  font-size: 30px;
-  font-weight: 600;
-  color: black;
-}
-
-.question-number-text {
-  font-size: 20px;
-  color: rgb(81, 98, 236);
+  margin-bottom: 20x;
 }
 
 .content {
@@ -380,7 +388,6 @@ export default {
 }
 
 .video-col {
-  margin: 30px 0px;
 }
 
 .video-container {
@@ -391,7 +398,7 @@ export default {
 }
 
 video {
-  border-radius: 10px;
+  border-radius: 6px;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -403,76 +410,37 @@ video {
   justify-content: center;
   align-items: center;
   text-align: center;
-  min-height: 50px;
 }
 
-.question-col {
-  width: 400px;
-}
-
-.question {
-  text-align: left;
-  .question-text {
-    font-weight: 500;
-    font-size: 18px;
-    color: #333;
-  }
-}
-
-.v-btn {
-  padding: 0px 20px;
-  font-size: 20px;
-}
-
-.headline {
-  margin-bottom: 10px;
-}
-
-.audio-canvas {
-  width: 50px;
-  height: 22px;
-  border-radius: 30px;
-  background: rgba(0, 0, 0, 0.1);
-  box-shadow: 0 10px 12px rgb(240, 244, 248);
-  border: 1px rgb(255, 126, 126) solid;
-}
-
-.flash-color {
-  animation: flashColor 1.5s infinite;
-}
-
-@keyframes flashColor {
-  0% {
-    background-color: rgb(81, 98, 236);
-  }
-  50% {
-    background-color: rgb(121 134 236);
-  }
-  100% {
-    background-color: rgb(81, 98, 236);
-  }
-}
-
-@keyframes flashTimer {
-  0% {
-    background-color: rgb(81, 98, 236);
-  }
-  50% {
-    background-color: rgb(121 134 236);
-  }
-  100% {
-    background-color: rgb(81, 98, 236);
-  }
-}
-
-.evaluation-screen {
+.video-interview {
   display: flex;
   justify-content: center;
-  align-items: center;
-  height: 100%;
-  text-align: center;
-  h2 {
-    color: #333;
+  flex-direction: row;
+  background-color: white;
+  height: 70%;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 80px;
+  .question-number {
+    color: #424141;
+    font-size: 22px;
+    font-weight: 600;
+    height: 40px;
+    margin-bottom: 10px;
   }
+  .question-text {
+    font-size: 22px;
+    color: #575757;
+  }
+}
+
+.complete-button {
+  padding: 0px 20px;
+  font-size: 16px;
+  color: white;
+  background-color: #5162ec;
+  border-radius: 0px 3px 3px 0px;
+  width: 100%;
+  font-weight: 600;
 }
 </style>
