@@ -59,6 +59,7 @@
           </div>
           <div class="video-container">
             <video ref="video" autoplay muted></video>
+            <div class="record-indicator"></div>
           </div>
           <div>
             <AvMedia :media="mediaObject" type="vbar"></AvMedia>
@@ -68,7 +69,6 @@
     </div>
   </div>
 </template>
-
 <script>
 import axios from "axios";
 import CandidateInfoForm from "./CandidateInfoForm.vue";
@@ -307,7 +307,6 @@ export default {
   },
 };
 </script>
-
 <style scoped lang="scss">
 .main-container {
   position: fixed;
@@ -354,6 +353,7 @@ export default {
 }
 
 .video-container {
+  position: relative;
   height: 400px;
   width: 500px;
   background-color: #000;
@@ -365,6 +365,29 @@ video {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.record-indicator {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 15px;
+  height: 15px;
+  background-color: rgb(197, 0, 0);
+  border-radius: 50%;
+  animation: blink 1.5s infinite;
+}
+
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 .controls {

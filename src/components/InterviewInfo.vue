@@ -23,7 +23,11 @@
           label="I have read and accept the rules"
         ></v-checkbox>
       </v-card-text>
-      <v-btn :disabled="!accepted" color="primary" @click="startInterview">
+      <v-btn
+        :disabled="!accepted || !permissionsGranted"
+        color="primary"
+        @click="startInterview"
+      >
         Start Interview
       </v-btn>
     </v-card>
@@ -35,11 +39,24 @@ export default {
   data() {
     return {
       accepted: false,
+      permissionsGranted: false,
     };
+  },
+  mounted() {
+    this.requestPermissions();
   },
   methods: {
     startInterview() {
       this.$emit("startInterview");
+    },
+    async requestPermissions() {
+      try {
+        await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        this.permissionsGranted = true;
+      } catch (error) {
+        console.error("Permissions not granted: ", error);
+        this.permissionsGranted = false;
+      }
     },
   },
 };
