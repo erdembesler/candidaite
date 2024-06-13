@@ -9,13 +9,13 @@
     </div>
     <p
       style="font-size: 24px; margin-bottom: 5px; color: #494949"
-      v-if="!isEvaluated"
+      v-if="!isEvaluated || true"
     >
       You have completed interview. Please wait for evaluation..
     </p>
     <p v-else>Your interview has been evaluated</p>
     <v-progress-linear
-      v-if="!isEvaluated"
+      v-if="!isEvaluated || true"
       color="#5162ec"
       indeterminate
     ></v-progress-linear>

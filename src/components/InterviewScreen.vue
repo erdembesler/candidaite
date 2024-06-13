@@ -10,7 +10,7 @@
       class="interview-countdown"
     >
       <div class="countdown-text">
-        {{ questions[currentQuestionIndex].questionText }}
+        {{ questions.length && questions[currentQuestionIndex].questionText }}
       </div>
       <div v-if="countdown" class="countdown">{{ countdown }}</div>
     </div>
@@ -21,7 +21,7 @@
           <b> {{ questions.length }}</b>
         </div>
         <div class="question-text">
-          {{ questions[currentQuestionIndex].questionText }}
+          {{ questions.length && questions[currentQuestionIndex].questionText }}
         </div>
       </div>
 
@@ -32,7 +32,8 @@
             icon="mdi-clock-time-nine-outline"
           ></v-icon>
           <span style="font-size: 14px"
-            >minutes: {{ questions[currentQuestionIndex].time }}</span
+            >minutes:
+            {{ questions.length && questions[currentQuestionIndex].time }}</span
           >
         </div>
         <div>
@@ -52,19 +53,11 @@
             <div class="controls">
               <v-btn
                 size="large"
-                v-if="isRecording && !isLastQuestion"
+                v-if="isRecording"
                 @click="stopRecording"
                 class="complete-button"
               >
                 {{ isLastQuestion ? "Complete" : "Next" }}
-              </v-btn>
-              <v-btn
-                size="large"
-                v-if="isRecording && isLastQuestion"
-                @click="stopRecording"
-                class="complete-button"
-              >
-                Complete
               </v-btn>
             </div>
           </div>
@@ -120,6 +113,7 @@ export default {
       analyser: null,
       dataArray: null,
       currentQuestionIndex: 0,
+      questionIndexToBeTranscribed: 0,
       questions: [],
       candidate: {
         name: "",
@@ -132,6 +126,7 @@ export default {
       audioLevel: 0,
       isEvaluated: false,
       evaluationResponse: null,
+      isLastQuestionTranscribed: false,
     };
   },
   props: {
@@ -226,9 +221,10 @@ export default {
       this.startTimer();
       this.updateAudioLevel();
     },
-    stopRecording() {
+    async stopRecording() {
+      this.questionIndexToBeTranscribed = this.currentQuestionIndex;
       if (this.mediaRecorder) {
-        this.mediaRecorder.stop();
+        await this.mediaRecorder.stop();
       }
       this.isRecordComplete = true;
       this.isRecording = false;
@@ -236,7 +232,6 @@ export default {
 
       if (this.isLastQuestion) {
         this.isEvaluating = true;
-        this.submit();
       } else {
         this.currentQuestionIndex++;
         this.startCountdown();
@@ -264,8 +259,11 @@ export default {
             },
           }
         );
-        this.questions[this.currentQuestionIndex].answerText =
+        this.questions[this.questionIndexToBeTranscribed].answerText =
           response.data.transcription;
+        if (this.questionIndexToBeTranscribed == this.questions.length - 1) {
+          this.isLastQuestionTranscribed = true;
+        }
       } catch (error) {
         console.error("Error transcribing audio:", error);
       }
@@ -323,7 +321,6 @@ export default {
           "http://localhost:3000/candidate-interviews",
           candidateData
         );
-        console.log(response.data);
         this.isEvaluated = true;
         this.evaluationResponse = response.data;
       } catch (error) {
@@ -353,6 +350,11 @@ export default {
       if (newIndex !== oldIndex) {
         this.stopTimer();
         this.startTimer();
+      }
+    },
+    isLastQuestionTranscribed(val) {
+      if (val) {
+        this.submit();
       }
     },
   },
