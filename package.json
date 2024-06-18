@@ -2,16 +2,21 @@
   "name": "candidaite",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "dev": "nuxt dev",
+    "build": "nuxt build",
+    "start": "nuxt start"
   },
   "dependencies": {
+    "@nuxtjs/style-resources": "^1.2.2",
     "@popperjs/core": "^2.11.8",
     "axios": "^1.7.2",
     "core-js": "^3.8.3",
     "firebase": "^10.12.2",
+    "nuxt": "^3.12.2",
     "vue": "^3.2.13",
     "vue-router": "^4.0.13",
     "vuetify": "^3.6.7",

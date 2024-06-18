@@ -53,7 +53,7 @@ export default {
     const fetchInterviewResults = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:3000/candidate-interviews"
+          "http://localhost:3002/candidate-interviews"
         );
         interviewResults.value = response.data;
       } catch (error) {

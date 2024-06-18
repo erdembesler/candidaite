@@ -1,17 +1,17 @@
+<!-- layouts/default.vue -->
 <template>
   <v-app>
     <Header style="z-index: 99999"></Header>
     <v-main>
-      <router-view />
+      <NuxtPage />
     </v-main>
   </v-app>
 </template>
 
 <script>
-import Header from "./components/Header.vue";
+import Header from "../components/Header.vue";
 
 export default {
-  name: "App",
   components: {
     Header,
   },
@@ -19,5 +19,5 @@ export default {
 </script>
 
 <style scoped lang="scss">
-/* Scoped styles for your app can go here */
+/* Scoped styles for your layout can go here */
 </style>

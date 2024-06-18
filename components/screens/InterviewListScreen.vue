@@ -143,7 +143,7 @@ export default {
 
     const fetchInterviews = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/interviews");
+        const response = await axios.get("http://localhost:3002/interviews");
         interviews.value = response.data;
       } catch (error) {
         console.error("Error fetching interviews:", error);
@@ -154,7 +154,7 @@ export default {
 
     const deleteInterview = async (id) => {
       try {
-        await axios.delete(`http://localhost:3000/interviews/${id}`);
+        await axios.delete(`http://localhost:3002/interviews/${id}`);
         fetchInterviews();
       } catch (error) {
         console.error("Error deleting interview:", error);
@@ -162,15 +162,15 @@ export default {
     };
 
     const goToAddInterview = () => {
-      router.push({ name: "AddInterview" });
+      router.push(`/add-interview`);
     };
 
     const editInterview = (id) => {
-      router.push({ name: "EditInterview", params: { id } });
+      router.push(`/edit-interview/${id}`);
     };
 
     const goToInterview = (id) => {
-      router.push({ name: "Interview", params: { id } });
+      router.push(`/candidate-interview/${id}`);
     };
 
     onMounted(fetchInterviews);

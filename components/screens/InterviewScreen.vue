@@ -87,9 +87,9 @@
 </template>
 <script>
 import axios from "axios";
-import CandidateInfoForm from "./CandidateInfoForm.vue";
-import InterviewInfo from "./InterviewInfo.vue";
-import EvaluationStatus from "./EvaluationStatus.vue";
+import CandidateInfoForm from "../CandidateInfoForm.vue";
+import InterviewInfo from "../InterviewInfo.vue";
+import EvaluationStatus from "../EvaluationStatus.vue";
 
 export default {
   components: {
@@ -168,7 +168,7 @@ export default {
       try {
         const id = this.$route.params.id || this.id;
         const response = await axios.get(
-          `http://localhost:3000/interviews/${id}/candidates`
+          `http://localhost:3002/interviews/${id}/candidates`
         );
         const { questions, title } = response.data;
         this.questions = questions;
@@ -251,7 +251,7 @@ export default {
 
       try {
         const response = await axios.post(
-          "http://localhost:3000/transcribe",
+          "http://localhost:3002/transcribe",
           formData,
           {
             headers: {
@@ -318,7 +318,7 @@ export default {
           status: "WAITING_FOR_EVALUATION",
         };
         const response = await axios.post(
-          "http://localhost:3000/candidate-interviews",
+          "http://localhost:3002/candidate-interviews",
           candidateData
         );
         this.isEvaluated = true;

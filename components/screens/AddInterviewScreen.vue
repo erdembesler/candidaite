@@ -111,7 +111,7 @@ export default {
     const fetchInterview = async (id) => {
       try {
         const response = await axios.get(
-          `http://localhost:3000/interviews/${id}`
+          `http://localhost:3002/interviews/${id}`
         );
         interview.value = response.data;
         if (!response.data.questions || response.data.questions.length === 0) {
@@ -126,11 +126,11 @@ export default {
       try {
         if (isEdit.value) {
           await axios.put(
-            `http://localhost:3000/interviews/${props.id}`,
+            `http://localhost:3002/interviews/${props.id}`,
             interview.value
           );
         } else {
-          await axios.post("http://localhost:3000/interviews", interview.value);
+          await axios.post("http://localhost:3002/interviews", interview.value);
         }
         router.push({ name: "InterviewList" });
       } catch (error) {
@@ -139,6 +139,7 @@ export default {
     };
 
     onMounted(() => {
+      console.log(props.id, " - id");
       if (props.id) {
         fetchInterview(props.id);
       } else {
