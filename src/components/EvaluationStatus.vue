@@ -9,13 +9,16 @@
     </div>
     <p
       style="font-size: 24px; margin-bottom: 5px; color: #494949"
-      v-if="!isEvaluated || true"
+      v-if="!isEvaluated"
     >
       You have completed interview. Please wait for evaluation..
     </p>
-    <p v-else>Your interview has been evaluated</p>
+    <p v-else style="font-size: 24px; margin-bottom: 5px; color: #494949">
+      You can check your interview evaluation from
+      <router-link to="/interview-result-list">here</router-link>
+    </p>
     <v-progress-linear
-      v-if="!isEvaluated || true"
+      v-if="!isEvaluated"
       color="#5162ec"
       indeterminate
     ></v-progress-linear>
