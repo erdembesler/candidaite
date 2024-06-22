@@ -3,6 +3,10 @@ node_modules
 /dist
 .nuxt
 .output
+.cache
+.nitro
+.env
+dist
 
 
 # local env files

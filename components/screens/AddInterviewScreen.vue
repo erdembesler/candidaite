@@ -75,7 +75,7 @@
 
 <script>
 import { ref, onMounted, watch } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter } from "#app";
 import axios from "axios";
 
 export default {

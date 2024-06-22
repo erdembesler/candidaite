@@ -4,7 +4,7 @@
 </template>
 
 <script setup>
-import { useRoute } from "vue-router";
+import { useRouter } from "#app";
 import { ref } from "vue";
 import AddInterviewScreen from "../../components/screens/AddInterviewScreen.vue";
 

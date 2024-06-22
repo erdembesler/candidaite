@@ -1,16 +1,39 @@
-import { defineNuxtPlugin } from 'nuxt/app';
-import { createVuetify } from 'vuetify';
+// Styles
+import '@mdi/font/css/materialdesignicons.css';
 import 'vuetify/styles';
-import '@mdi/font/css/materialdesignicons.css';  // Make sure you include this
 
+// Composables
+import { createVuetify } from 'vuetify';
 import { aliases, mdi } from 'vuetify/iconsets/mdi';
 import * as components from 'vuetify/components';
 import * as directives from 'vuetify/directives';
 
-export default defineNuxtPlugin((nuxtApp) => {
+import { defineNuxtPlugin } from '#app';
+
+// Import theme configuration
+import theme from '../config/theme';
+
+export default defineNuxtPlugin(nuxtApp => {
   const vuetify = createVuetify({
     components,
     directives,
+    ssr: true,
+    theme: {
+      options: { customProperties: true },
+      defaultTheme: 'light',
+      themes: {
+        light: {
+          colors: {
+            ...theme,
+          },
+        },
+        dark: {
+          colors: {
+            ...theme,
+          },
+        },
+      },
+    },
     icons: {
       defaultSet: 'mdi',
       aliases,
