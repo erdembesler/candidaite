@@ -59,6 +59,8 @@ export default {
     const router = useRouter();
     const search = ref("");
     const interviews = ref([]);
+    const storedLang = useCookie("i18n_redirected");
+
     const headers = ref([
       { key: "Title", title: "Position" },
       { key: "Description", title: "Description" },
@@ -162,15 +164,18 @@ export default {
     };
 
     const goToAddInterview = () => {
-      router.push(`/add-interview`);
+      router.push({ path: `/${storedLang.value}/add-interview` });
     };
 
     const editInterview = (id) => {
-      router.push(`/edit-interview/${id}`);
+      router.push({
+        path: `/${storedLang.value}/edit-interview/${id}`,
+        params: { id },
+      });
     };
 
     const goToInterview = (id) => {
-      router.push(`/candidate-interview/${id}`);
+      router.push({ path: `/${storedLang.value}/candidate-interview/${id}` });
     };
 
     onMounted(fetchInterviews);

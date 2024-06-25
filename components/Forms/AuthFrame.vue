@@ -3,7 +3,7 @@
     <hidden point="mdUp">
       <div class="logo logo-header">
         <nuxt-link :to="localePath(routerLink.saas.home)">
-          <img src="/images/saas-logo.svg" alt="logo">
+          <img src="/images/saas-logo.svg" alt="logo" />
           <p class="use-text-subtitle2">
             {{ brand.saas.projectName }}
           </p>
@@ -34,7 +34,7 @@
             <v-col v-if="isDesktop" md="5" cols="12">
               <div class="greeting">
                 <div class="logo">
-                  <img src="/images/saas-logo.svg" alt="logo">
+                  <img src="/images/saas-logo.svg" alt="logo" />
                   <p class="use-text-subtitle2">
                     {{ brand.saas.projectName }}
                   </p>
@@ -60,14 +60,14 @@
 </template>
 
 <style lang="scss" scoped>
-@import './form-style.scss';
+@import "./form-style.scss";
 </style>
 
 <script>
-import brand from '@/assets/text/brand';
-import routerLink from '@/assets/text/link';
-import Hidden from '../Hidden';
-import { useLocalePath } from '#imports';
+import brand from "@/assets/text/brand";
+import routerLink from "@/assets/text/link";
+import Hidden from "../Hidden";
+import { useLocalePath } from "#imports";
 
 export default {
   setup() {
@@ -86,7 +86,7 @@ export default {
     },
     subtitle: {
       type: String,
-      default: '',
+      default: "",
     },
   },
   data() {

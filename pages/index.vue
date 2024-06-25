@@ -1,11 +1,8 @@
 <template>
   <div>
     <main-container nav-scroll>
-      <section id="home">
+      <section id="home" style="margin-bottom: 400px">
         <banner />
-      </section>
-      <section>
-        <company-logo />
       </section>
       <!-- <section :class="!isMobile && 'space-top-short'">
         <counter />

@@ -4,7 +4,6 @@
     v-model="openDrawer"
     temporary
     width="320"
-    class="mobile-nav"
     style="background: none"
   >
     <mobile-menu :open="openDrawer" />
@@ -79,12 +78,12 @@
             <v-btn
               :to="localePath(link.saas.login)"
               class="text-btn"
-              v-text="$t('saasLanding.header_login')"
+              v-text="$t('saasLanding.header_bookademo')"
             />
             <v-btn
               :to="localePath(link.saas.register)"
               color="secondary"
-              class="button"
+              class="register-button"
               variant="flat"
               v-text="$t('saasLanding.header_register')"
             />
@@ -102,7 +101,7 @@
 
 <script>
 import { inject } from "vue";
-import logo from "@/assets/images/saas-logo.svg";
+import logo from "@/assets/images/logo-candidaite.png";
 import link from "@/assets/text/link";
 import brand from "@/assets/text/brand";
 import Hidden from "../Hidden";
@@ -168,8 +167,7 @@ export default {
       menuList: [
         createData(navMenu[0], "#" + navMenu[0]),
         createData(navMenu[1], "#" + navMenu[1]),
-        createData(navMenu[2], "#" + navMenu[2]),
-        createData(navMenu[3], "#" + navMenu[3], -40),
+        createData(navMenu[2], "#" + navMenu[2], -40),
       ],
     };
   },

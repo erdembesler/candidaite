@@ -4,10 +4,24 @@
 </template>
 
 <script setup>
-import { useRouter } from "#app";
-import { ref } from "vue";
+import { useRoute } from "vue-router";
 import AddInterviewScreen from "../../components/screens/AddInterviewScreen.vue";
 
 const route = useRoute();
-const id = ref(route.params.id);
+const id = route.params.id;
+</script>
+
+<script>
+import { defineNuxtComponent } from "#app";
+
+export default defineNuxtComponent({
+  components: {
+    AddInterviewScreen,
+  },
+  head() {
+    return {
+      title: brand.saas.name + " - Edit",
+    };
+  },
+});
 </script>

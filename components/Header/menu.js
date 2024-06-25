@@ -1,3 +1,3 @@
-const menu = ['feature', 'testimonials', 'pricing', 'faq'];
+const menu = ['feature', 'pricing', 'faq'];
 
 export default menu;

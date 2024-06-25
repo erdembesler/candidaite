@@ -3,13 +3,13 @@ import colors from 'vuetify/lib/util/colors';
 
 const palette = {
   violeta: {
-    primary: colors.purple.base, // primary main
-    primarylight: colors.purple.lighten4, // primary light
-    primarydark: colors.purple.darken3, // primary dark
-    secondary: colors.lightGreen.base, // secondary main
-    secondarylight: colors.lightGreen.lighten4, // secondary light
-    secondarydark: colors.lightGreen.darken3, // secondary dark
-    anchor: colors.purple.base // link
+    primary: colors.grey.darken4, // primary main - dark grey
+    primarylight: colors.grey.lighten3, // primary light - light grey
+    primarydark: colors.shades.black, // primary dark - black
+    secondary: colors.shades.black, // secondary main
+    secondarylight: colors.grey.lighten1, // secondary light - lighter grey
+    secondarydark: colors.shades.white, // secondary dark
+    anchor: colors.grey.darken4, // link - dark grey
   },
 };
 

@@ -67,34 +67,39 @@ $wave-deco-dark: '/images/saas/deco-wave-dark.png';
   position: relative;
   z-index: 3;
   display: flex;
-  justify-content: space-between
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+
 }
 
 .text {
-  max-width: 720px;
+  max-width: 950px;
+  align-self: center;
   @include breakpoints-down(sm) {
     text-align: center
   }
   h3 {
     color: $palette-common-white;
     @include breakpoints-up(lg) {
-      @include padding-right($spacing5)
     }
     strong {
       font-weight: $font-bold
     }
   }
   p {
+    max-width: 720;
     color: $palette-common-white;
     margin: spacing(4, 0);
     @include breakpoints-up(lg) {
-      @include padding-right($spacing15)
     }
   }
 }
 
 .btn-area {
   display: flex;
+  flex-direction: row;
+  justify-content: center;
   @include breakpoints-down(sm) {
     justify-content: center;
   }
@@ -105,6 +110,28 @@ $wave-deco-dark: '/images/saas/deco-wave-dark.png';
       height: 56px
     }
   }
+
+  .demo-button{
+    margin-right: 10px;
+    color: white;
+    background: linear-gradient(to right, purple, rgb(234, 141, 248));
+    padding: 15px 15px;
+    font-weight: 400;
+  }
+  .try-button{
+    color: $palette-common-white !important;
+    background-color: transparent;
+    border: 1px solid white;
+    padding: 15px 15px;
+    font-weight: 400;
+  }
+}
+.try-button-reverse{
+  background-color: transparent;
+  border: 1px solid black;
+  color: black;
+  padding: 15px 15px;
+  font-weight: 400;
 }
 
 .play-btn {
@@ -146,6 +173,8 @@ $wave-deco-dark: '/images/saas/deco-wave-dark.png';
 }
 
 .illustration {
+  margin-top: 45px;
+  margin-right: 20px;
   @include breakpoints-down(sm) {
     display: none
   }

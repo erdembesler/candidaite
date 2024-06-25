@@ -113,7 +113,7 @@ $flag: '/images/flag-logo.png';
       }
     }
     .text-btn {
-      color: $palette-common-white !important
+      color: $palette-common-white !important;
     }
     .mobile-menu .bar {
       background-color: $palette-common-white;
@@ -225,8 +225,11 @@ $flag: '/images/flag-logo.png';
   }
 }
 
-.button {
-  width: $spacing20
+.register-button {
+  width: $spacing20;
+  color: $palette-common-white !important;
+  background-color: transparent;
+  border: 1px solid white;
 }
 
 .text-btn {
@@ -405,7 +408,7 @@ paper-nav {
   height: 100%;
   padding-top: 100px;
   @include breakpoints-down(xs) {
-    width: 100% !important
+    width: 100% !important;
   }
   .menu {
     padding: spacing(0, 2, 4);
