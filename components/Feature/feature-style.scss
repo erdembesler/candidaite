@@ -30,7 +30,7 @@
 .item {
   position: relative;
   min-height: 320px;
-  margin-bottom: $spacing20;
+  margin-bottom: $spacing15;
   .desc {
     position: relative;
     z-index: 60
@@ -225,4 +225,37 @@
       width: 100%
     }
   }
+}
+
+.youtube{
+  overflow: hidden;
+  :deep(iframe) {
+    border-radius: 10px;
+  }
+  @include breakpoints-down(md) {
+    width: 100% !important;
+    border-radius: 10px;
+    height: 400px !important;
+
+    > * {
+      padding: $spacing1;
+    }
+    :deep(iframe) {
+      width: 100% !important;
+      height: 400px !important;
+
+      border-radius: 10px;
+    }
+  }
+  @include breakpoints-down(xs) {
+    height: 300px !important;
+
+    :deep(iframe) {
+      width: 100% !important;
+      height: 300px !important;
+
+      border-radius: 10px;
+    }
+  }
+
 }

@@ -1,28 +1,5 @@
 <template>
   <div class="root">
-    <!-- <v-dialog v-model="dialog" max-width="690">
-      <v-card class="video-popup">
-        <v-card-title class="headline">
-          <h2 class="text-h6">
-            {{ $t("saasLanding.banner_title") }}
-            <v-btn variant="flat" icon @click="handleVideoClose()">
-              <v-icon>mdi-close</v-icon>
-            </v-btn>
-          </h2>
-        </v-card-title>
-        <div v-if="yt.use" class="text-center mx-auto py-4">
-          <YouTube
-            ref="youtube"
-            :src="videoId"
-            :vars="playerVars"
-            :width="640"
-            :height="360"
-            class="youtube"
-            @ready="onReady"
-          />
-        </div>
-      </v-card>
-    </v-dialog> -->
     <div class="decoration">
       <svg class="left-deco">
         <use xlink:href="/images/saas/deco-bg-left.svg#main" />
@@ -37,30 +14,14 @@
           <div>
             <h3 class="use-text-title">
               {{ $t("saasLanding.banner_title") }}
-              <!-- <strong>
-              {{ $t("saasLanding.banner_titlestrong") }}
-            </strong> -->
             </h3>
           </div>
-
-          <div style="max-width: 740px; margin: 0 auto">
+          <div class="subtitle">
             <p class="use-text-subtitle">
               {{ $t("saasLanding.banner_subtitle") }}
             </p>
           </div>
-
           <div class="btn-area">
-            <!-- <v-btn
-              variant="text"
-              class="play-btn"
-              size="large"
-              @click="handleVideoOpen()"
-            >
-              <span class="icon">
-                <i class="ion-ios-play-outline" />
-              </span>
-              {{ $t("saasLanding.banner_watchvideo") }}
-            </v-btn> -->
             <v-btn
               :to="localePath(link.saas.login)"
               size="large"
@@ -77,53 +38,10 @@
             </v-btn>
           </div>
         </div>
-        <!-- <div class="illustration">
-          <img
-            style="
-              border-radius: 15px;
-              border: 1px solid white;
-              box-shadow: 1px 1px 3px 3px black;
-            "
-            :src="imgAPI.saas[7]"
-            alt="illustration"
-          />
-        </div> -->
-        <div
-          style="
-            width: 1000px;
-            height: 400px;
-            background-color: white;
-            align-self: center;
-            margin-top: 80px;
-            border-radius: 10px;
-            display: flex;
-            justify-content: flex-end;
-            flex-direction: row;
-            padding: 30px 0px 40px 50px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Hafif gölge */
-          "
-        >
-          <div
-            style="
-              display: flex;
-              justify-content: flex-start;
-              flex-direction: column;
-              text-align: left;
-              margin-right: 20px;
-            "
-          >
-            <div
-              style="
-                font-size: 40px;
-                font-weight: 700;
-                margin-bottom: 20px;
-                line-height: 50px;
-                margin-top: 15px;
-              "
-            >
-              Experience the potential today!
-            </div>
-            <div style="margin-bottom: 30px; font-size: 18px">
+        <div class="sub-banner">
+          <div class="sub-banner-text">
+            <div class="sub-banner-title">Experience the potential today!</div>
+            <div class="sub-banner-subtitle">
               Transform your recruitment with AI-powered solutions. Try our free
               demo to experience the difference.
             </div>
@@ -137,8 +55,8 @@
               </v-btn>
             </div>
           </div>
-          <div style="display: flex; justify-content: center">
-            <img style="width: 500px" :src="imgAPI.saas[8]" alt="screen" />
+          <div class="sub-banner-image">
+            <img :src="imgAPI.saas[8]" alt="screen" />
           </div>
         </div>
       </div>

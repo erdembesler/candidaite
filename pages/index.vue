@@ -1,7 +1,7 @@
 <template>
   <div>
     <main-container nav-scroll>
-      <section id="home" style="margin-bottom: 400px">
+      <section id="home" class="banner">
         <banner />
       </section>
       <!-- <section :class="!isMobile && 'space-top-short'">
@@ -75,6 +75,22 @@
   margin-top: -40px;
   > section {
     position: relative;
+  }
+}
+
+.banner {
+  margin-bottom: 350px;
+
+  @include breakpoints-down(md) {
+    margin-bottom: 150px;
+  }
+
+  @include breakpoints-down(sm) {
+    margin-bottom: 100px;
+  }
+
+  @include breakpoints-down(xs) {
+    margin-bottom: 30px;
   }
 }
 </style>

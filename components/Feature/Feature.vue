@@ -9,43 +9,58 @@
       <div class="item">
         <v-row>
           <v-col
-            :order="isMobile ? 'last' : 'first'"
+            md="4"
             cols="12"
-            md="6"
+            style="
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+            "
           >
-            <div class="illustration-left">
-              <section v-if="loaded" class="parallax-wrap">
-                <div class="viewport">
-                  <figure class="figure screen">
-                    <img :src="imgAPI.saas[0]" alt="screen">
-                  </figure>
-                </div>
-              </section>
-              <client-only>
-                <section
-                  v-if="loaded && !isMobile"
-                  class="parallax-wrap"
+            <div
+              data-aos="fade-right"
+              data-aos-offset="-100"
+              data-aos-delay="500"
+              data-aos-duration="500"
+            >
+              <div class="desc">
+                <title-main :align="isMobile ? 'center' : 'left'">
+                  <span>
+                    {{ $t("saasLanding.feature_title1") }}
+                  </span>
+                </title-main>
+                <h6
+                  class="use-text-subtitle2"
+                  :class="[isMobile ? 'text-center' : 'text-start']"
                 >
-                  <scroll-parallax
-                    :speed="isMobile ? 0 : 0.1"
-                    direction="y"
-                  >
-                    <div class="viewport">
-                      <figure class="figure graphic">
-                        <img :src="imgAPI.saas[1]" alt="illustration">
-                      </figure>
-                    </div>
-                  </scroll-parallax>
-                </section>
-              </client-only>
-              <parallax-medium />
+                  {{ $t("saasLanding.feature_desc2") }}
+                </h6>
+                <div :class="[isMobile ? 'text-center' : 'text-start']">
+                  <v-btn color="primary" size="large" class="btn">
+                    {{ $t("saasLanding.see_detail") }}
+                  </v-btn>
+                </div>
+              </div>
             </div>
           </v-col>
-          <v-col
-            :order="isMobile ? 'first' : 'last'"
-            cols="12"
-            md="6"
-          >
+          <v-col md="8" cols="12">
+            <div class="youtube-container">
+              <YouTube
+                ref="youtube"
+                :src="videoId"
+                :vars="playerVars"
+                :width="youtubeWidth"
+                :height="youtubeHeight"
+                class="youtube"
+                @ready="onReady"
+              />
+            </div>
+          </v-col>
+        </v-row>
+      </div>
+      <div class="item">
+        <v-row>
+          <v-col :order="isMobile ? 'first' : 'last'" cols="12" md="4">
             <div
               data-aos="fade-left"
               data-aos-offset="-100"
@@ -55,98 +70,39 @@
               <div class="desc">
                 <title-main :align="isMobile ? 'center' : 'left'">
                   <span>
-                    {{ $t('saasLanding.feature_title1') }}
+                    {{ $t("saasLanding.feature_title1") }}
                     <strong>
-                      {{ $t('saasLanding.feature_titlestrong1') }}
+                      {{ $t("saasLanding.feature_titlestrong1") }}
                     </strong>
                   </span>
                 </title-main>
-                <h6 class="use-text-subtitle2" :class="[isMobile ? 'text-center' : 'text-left']">
-                  {{ $t('saasLanding.feature_desc1') }}
+                <h6
+                  class="use-text-subtitle2"
+                  :class="[isMobile ? 'text-center' : 'text-left']"
+                >
+                  {{ $t("saasLanding.feature_desc1") }}
                 </h6>
-                <v-btn color="primary" size="large" class="btn">
-                  {{ $t('saasLanding.see_detail') }}
+                <v-btn color="primary" size="large" class="btn" style="">
+                  {{ $t("saasLanding.see_detail") }}
                 </v-btn>
               </div>
             </div>
           </v-col>
-        </v-row>
-      </div>
-      <div class="item">
-        <v-row>
-          <v-col md="6" cols="12">
-            <div
-              data-aos="fade-right"
-              data-aos-offset="-100"
-              data-aos-delay="500"
-              data-aos-duration="500"
-            >
-              <div class="desc">
-                <title-main :align="isMobile ? 'center' : 'right'">
-                  <span>
-                    {{ $t('saasLanding.feature_title1') }}
-                    <strong>
-                      {{ $t('saasLanding.feature_titlestrong2') }}
-                    </strong>
-                  </span>
-                </title-main>
-                <h6 class="use-text-subtitle2" :class="[isMobile ? 'text-center' : 'text-end']">
-                  {{ $t('saasLanding.feature_desc2') }}
-                </h6>
-                <div :class="[isMobile ? 'text-center' : 'text-end']">
-                  <v-btn color="primary" size="large" class="btn">
-                    {{ $t('saasLanding.see_detail') }}
-                  </v-btn>
-                </div>
-              </div>
-            </div>
-          </v-col>
-          <v-col md="6" cols="12">
-            <div class="illustration-right">
-              <section v-if="loaded" class="parallax-wrap">
-                <div class="viewport">
-                  <figure class="figure screen">
-                    <img :src="imgAPI.saas[2]" alt="screen">
-                  </figure>
-                </div>
-              </section>
-              <section
-                v-if="loaded && !isMobile"
-                class="parallax-wrap"
-              >
-                <scroll-parallax
-                  :speed="isMobile ? 0 : 0.1"
-                  direction="y"
-                >
-                  <div class="viewport">
-                    <figure class="graphic">
-                      <img :src="imgAPI.saas[3]" alt="illustration">
-                    </figure>
-                  </div>
-                </scroll-parallax>
-              </section>
-              <parallax-medium />
-            </div>
-          </v-col>
+          <v-col :order="isMobile ? 'last' : 'first'" cols="12" md="8"> </v-col>
         </v-row>
       </div>
       <div class="item last">
         <title-main align="center">
           <span>
-            {{ $t('saasLanding.feature_title3') }}
+            {{ $t("saasLanding.feature_title3") }}
             <strong>
-              {{ $t('saasLanding.feature_titlestrong3') }}
+              {{ $t("saasLanding.feature_titlestrong3") }}
             </strong>
           </span>
         </title-main>
         <div class="tab">
           <v-row class="spacing6">
-            <v-col
-              v-if="!isMobile"
-              class="pa-6"
-              md="1"
-              cols="12"
-            />
+            <v-col v-if="!isMobile" class="pa-6" md="1" cols="12" />
             <v-col lg="10" cols="12" class="pa-6">
               <v-tabs
                 v-model="tab"
@@ -154,26 +110,20 @@
                 color="primary"
                 align-tabs="center"
               >
-                <v-tab value="tab-1" class="tab-label">
-                  Pellentesque
-                </v-tab>
-                <v-tab value="tab-2" class="tab-label">
-                  Donec
-                </v-tab>
-                <v-tab value="tab-3" class="tab-label">
-                  Vestibulum
-                </v-tab>
+                <v-tab value="tab-1" class="tab-label"> Pellentesque </v-tab>
+                <v-tab value="tab-2" class="tab-label"> Donec </v-tab>
+                <v-tab value="tab-3" class="tab-label"> Vestibulum </v-tab>
               </v-tabs>
               <v-window v-model="tab">
                 <v-window-item value="tab-1">
                   <div class="tab-content">
                     <section>
                       <h6 class="text-center use-text-subtitle2">
-                        {{ $t('saasLanding.feature_desc3') }}
+                        {{ $t("saasLanding.feature_desc3") }}
                       </h6>
                       <div class="illustration-center">
                         <figure class="figure screen">
-                          <img :src="imgAPI.saas[4]" alt="screen">
+                          <img :src="imgAPI.saas[4]" alt="screen" />
                         </figure>
                       </div>
                     </section>
@@ -183,11 +133,11 @@
                   <div class="tab-content">
                     <section>
                       <h6 class="text-center use-text-subtitle2">
-                        {{ $t('saasLanding.feature_desc3') }}
+                        {{ $t("saasLanding.feature_desc3") }}
                       </h6>
                       <div class="illustration-center">
                         <figure class="figure screen">
-                          <img :src="imgAPI.saas[5]" alt="screen">
+                          <img :src="imgAPI.saas[5]" alt="screen" />
                         </figure>
                       </div>
                     </section>
@@ -197,11 +147,11 @@
                   <div class="tab-content">
                     <section>
                       <h6 class="text-center use-text-subtitle2">
-                        {{ $t('saasLanding.feature_desc3') }}
+                        {{ $t("saasLanding.feature_desc3") }}
                       </h6>
                       <div class="illustration-center">
                         <figure class="figure screen">
-                          <img :src="imgAPI.saas[6]" alt="screen">
+                          <img :src="imgAPI.saas[6]" alt="screen" />
                         </figure>
                       </div>
                     </section>
@@ -218,37 +168,54 @@
 </template>
 
 <style lang="scss" scoped>
-@import './feature-style.scss';
+@import "./feature-style.scss";
 </style>
 
 <script>
-import AOS from 'aos';
-import imgAPI from '@/assets/images/imgAPI';
-import ParallaxMedium from '../Parallax/Medium';
-import ParallaxLarge from '../Parallax/Large';
-import Title from '../Title';
+import AOS from "aos";
+import imgAPI from "@/assets/images/imgAPI";
+import ParallaxMedium from "../Parallax/Medium";
+import ParallaxLarge from "../Parallax/Large";
+import Title from "../Title";
+import youtube from "~/plugins/youtube";
 
 export default {
   components: {
     ParallaxMedium,
     ParallaxLarge,
-    'title-main': Title,
+    "title-main": Title,
   },
   data() {
     return {
       tab: null,
       imgAPI,
       loaded: false,
+      videoId: "KxZAdEGpYAw",
+      youtubeWidth: 800,
+      youtubeHeight: 450,
+      playerVars: {
+        autoplay: 0,
+        controls: 1,
+        rel: 0,
+        showinfo: 0,
+        mute: 0,
+        origin: "https://localhost:3000",
+      },
     };
   },
   computed: {
     isDesktop() {
       const lgUp = this.$vuetify.display.lgAndUp;
+      console.log(lgUp);
       return lgUp;
     },
     isMobile() {
       const smDown = this.$vuetify.display.smAndDown;
       return smDown;
+    },
+    isTablet() {
+      const mdDown = this.$vuetify.display.mdAndDown;
+      return mdDown;
     },
   },
   mounted() {

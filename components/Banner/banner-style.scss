@@ -1,18 +1,19 @@
+
 $wave-deco-light: '/images/saas/deco-wave-light.png';
 $wave-deco-dark: '/images/saas/deco-wave-dark.png';
 
 @keyframes move_wave {
   0% {
     background-position: 0 0;
-    transform: scale(2, 1)
+    transform: scale(2, 1);
   }
   50% {
     background-position: 50% -50%;
-    transform: scale(2.3, 1.2)
+    transform: scale(2.3, 1.2);
   }
   100% {
     background-position: 100% 0;
-    transform: scale(2, 1)
+    transform: scale(2, 1);
   }
 }
 
@@ -22,11 +23,11 @@ $wave-deco-dark: '/images/saas/deco-wave-dark.png';
   padding: spacing(25, 0, 15);
   @include breakpoints-up(lg) {
     height: 780px;
-    padding: spacing(30, 0, 5)
+    padding: spacing(30, 0, 5);
   }
   @include breakpoints-down(xs) {
     padding: spacing(25, 0, 10);
-    position: relative
+    position: relative;
   }
 }
 
@@ -42,7 +43,7 @@ $wave-deco-dark: '/images/saas/deco-wave-dark.png';
     fill: $palette-secondary-main;
     opacity: 0.15;
     position: fixed;
-    top: 0
+    top: 0;
   }
 }
 
@@ -70,28 +71,26 @@ $wave-deco-dark: '/images/saas/deco-wave-dark.png';
   flex-direction: column;
   justify-content: center;
   text-align: center;
-
 }
 
 .text {
   max-width: 950px;
   align-self: center;
   @include breakpoints-down(sm) {
-    text-align: center
+    text-align: center;
   }
   h3 {
     color: $palette-common-white;
-    @include breakpoints-up(lg) {
-    }
     strong {
-      font-weight: $font-bold
+      font-weight: $font-bold;
     }
   }
-  p {
-    max-width: 720;
-    color: $palette-common-white;
-    margin: spacing(4, 0);
-    @include breakpoints-up(lg) {
+  .subtitle {
+    max-width: 740px;
+    margin: 0 auto;
+    p {
+      color: $palette-common-white;
+      margin: spacing(4, 0);
     }
   }
 }
@@ -107,18 +106,19 @@ $wave-deco-dark: '/images/saas/deco-wave-dark.png';
     flex-direction: column-reverse;
     > * {
       margin-bottom: $spacing4;
-      height: 56px
+      height: 56px;
     }
   }
 
-  .demo-button{
+  .demo-button {
     margin-right: 10px;
     color: white;
     background: linear-gradient(to right, purple, rgb(234, 141, 248));
     padding: 15px 15px;
     font-weight: 400;
   }
-  .try-button{
+
+  .try-button {
     color: $palette-common-white !important;
     background-color: transparent;
     border: 1px solid white;
@@ -126,7 +126,8 @@ $wave-deco-dark: '/images/saas/deco-wave-dark.png';
     font-weight: 400;
   }
 }
-.try-button-reverse{
+
+.try-button-reverse {
   background-color: transparent;
   border: 1px solid black;
   color: black;
@@ -162,12 +163,12 @@ $wave-deco-dark: '/images/saas/deco-wave-dark.png';
     color: $palette-common-white;
     line-height: 22px;
     @include margin-left(4px);
-    font-size: 24px
+    font-size: 24px;
   }
   &:hover {
     .icon {
       background: $palette-primary-dark;
-      @include left(0)
+      @include left(0);
     }
   }
 }
@@ -176,21 +177,21 @@ $wave-deco-dark: '/images/saas/deco-wave-dark.png';
   margin-top: 45px;
   margin-right: 20px;
   @include breakpoints-down(sm) {
-    display: none
+    display: none;
   }
   img {
     display: block;
     @include breakpoints-up(md) {
-      max-width: 400px
+      max-width: 400px;
     }
     @include breakpoints-up(lg) {
-      max-width: 480px
+      max-width: 480px;
     }
   }
 }
 
 .wave {
-  transform: translateZ(0)
+  transform: translateZ(0);
 }
 
 .deco {
@@ -200,10 +201,10 @@ $wave-deco-dark: '/images/saas/deco-wave-dark.png';
   @include left(0);
   width: 100%;
   @include breakpoints-up(sm) {
-    bottom: -20,
+    bottom: -20;
   }
   @include breakpoints-up(lg) {
-    bottom: -10,
+    bottom: -10;
   }
   .wave {
     position: absolute;
@@ -212,10 +213,10 @@ $wave-deco-dark: '/images/saas/deco-wave-dark.png';
     bottom: 0;
     @include left(0);
     .v-theme--dark & {
-      background-image: url($wave-deco-dark)
+      background-image: url($wave-deco-dark);
     }
     .v-theme--light & {
-      background-image: url($wave-deco-light)
+      background-image: url($wave-deco-light);
     }
     background-repeat: repeat-x;
     transform: scale(2.5, 1);
@@ -251,7 +252,7 @@ $wave-deco-dark: '/images/saas/deco-wave-dark.png';
     background-position: 397px 10px;
   }
   @include breakpoints-down(xs) {
-    background-position: center bottom
+    background-position: center bottom;
   }
 }
 
@@ -262,7 +263,7 @@ $wave-deco-dark: '/images/saas/deco-wave-dark.png';
     display: flex;
     width: 100%;
     justify-content: space-between;
-    align-items: center
+    align-items: center;
   }
   @include breakpoints-down(xs) {
     width: 100% !important;
@@ -270,7 +271,7 @@ $wave-deco-dark: '/images/saas/deco-wave-dark.png';
       width: 100% !important;
     }
     > * {
-      padding: $spacing1
+      padding: $spacing1;
     }
     :deep(iframe) {
       width: 100% !important;
@@ -295,7 +296,7 @@ $wave-deco-dark: '/images/saas/deco-wave-dark.png';
 .close-btn {
   position: absolute;
   top: 4px;
-  @include right(40px)
+  @include right(40px);
 }
 
 .deco-inner {
@@ -307,5 +308,66 @@ $wave-deco-dark: '/images/saas/deco-wave-dark.png';
 }
 
 .hide {
-  visibility: hidden
+  visibility: hidden;
+}
+
+/* Sub-Banner Styling */
+.sub-banner {
+  width: 100%;
+  max-width: 1000px;
+  background-color: white;
+  align-self: center;
+  margin-top: 80px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  padding: 30px 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: left;
+  padding: 50px 0px 40px 50px;
+
+  @include breakpoints-down(md) {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+  }
+
+  .sub-banner-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    margin-right: 20px;
+
+    @include breakpoints-down(md) {
+      margin-right: 0;
+      margin-bottom: 20px;
+    }
+
+    .sub-banner-title {
+      font-size: 40px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      line-height: 50px;
+      margin-top: 15px;
+    }
+
+    .sub-banner-subtitle {
+      margin-bottom: 30px;
+      font-size: 18px;
+    }
+  }
+
+  .sub-banner-image {
+    display: flex;
+    justify-content: center;
+
+    img {
+      width: 500px;
+      @include breakpoints-down(md) {
+        width: 100%;
+      }
+    }
+  }
 }
