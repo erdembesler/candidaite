@@ -29,8 +29,9 @@
 
 .item {
   position: relative;
-  min-height: 320px;
-  margin-bottom: $spacing15;
+  min-height: 600px;
+  margin-bottom: $spacing7;
+  margin-top: $spacing7;
   .desc {
     position: relative;
     z-index: 60
@@ -77,6 +78,21 @@
     img {
       width: 100%
     }
+  }
+}
+
+.item:nth-child(odd) {
+  background-color: white;
+  @include breakpoints-up(lg) {
+    margin-left: 250px;
+  }
+}
+
+.item:nth-child(even) {
+  background-color: rgba(235, 208, 255, 0.12);
+  box-shadow: 2px 2px 2px 4px rgba(235, 208, 255, 0.12);
+  @include breakpoints-up(lg) {
+    margin-right: 250px;
   }
 }
 
@@ -230,11 +246,11 @@
 .youtube{
   overflow: hidden;
   :deep(iframe) {
-    border-radius: 10px;
+    border-radius: 5px;
   }
   @include breakpoints-down(md) {
     width: 100% !important;
-    border-radius: 10px;
+    border-radius: 5px;
     height: 400px !important;
 
     > * {
@@ -258,4 +274,11 @@
     }
   }
 
+}
+
+
+.youtube-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: end;
 }

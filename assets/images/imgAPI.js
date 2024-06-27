@@ -38,6 +38,9 @@ const imgAPI = {
     'https://via.placeholder.com/1000x680/e91e63/FFFFFF',
     '/images/saas/ai-interview5.png',
     '/images/saas/candidaite-foto-1.png',
+    '/images/saas/candidaite-photo1.png',
+    '/images/saas/candidaite-photo2.png',
+    '/images/saas/candidaite-photo3.png',
   ],
 };
 

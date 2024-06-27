@@ -10,9 +10,9 @@
       <section id="feature" :class="isMobile ? 'space-top-short' : 'space-top'">
         <feature />
       </section>
-      <section id="testimonials" class="space-bottom-testi">
+      <!-- <section id="testimonials" class="space-bottom-testi">
         <testimonials />
-      </section>
+      </section> -->
       <section id="pricing" class="space-top">
         <pricing-plan />
       </section>
